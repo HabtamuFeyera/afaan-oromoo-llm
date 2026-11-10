@@ -152,6 +152,33 @@ learned about context.
   the train/validation gap stayed small (0.23). More Oromo text, or a larger model with more data,
   should keep improving it.
 
+#### Retraining with the Telegram data
+
+The same model and settings, retrained on the corpus with Telegram added (12.97M tokens, 4 passes,
+6,328 steps, 46 minutes). `scripts/15_compare_pretraining.py` scores both models on the same
+held-out text:
+
+| Model | Training words | Original val: perplexity | Original val: bits/char | Telegram val: perplexity | Telegram val: bits/char |
+|---|---:|---:|---:|---:|---:|
+| `oromo-gpt-23m` | 6.91M | 171 | 1.536 | 217 | 1.516 |
+| `oromo-gpt-23m-tg` | 8.07M | **163** | **1.522** | **96** | **1.286** |
+
+- **The new text is learned well:** bits per character on held-out Telegram posts fall by 15%
+  (perplexity 217 → 96). These channels cover 2019–2026 events and administrative and education
+  news that the older corpus lacks. Samples now mention places like *Benishaangul Gumuz* and
+  *Naqamtee*, and things like exam results.
+- **The old domain improves a little:** 1% fewer bits per character on the original validation set.
+  The new text doesn't crowd out the old.
+- **Caveats:**
+  - The retrained run also took 17% more optimizer steps, because each pass over the data is
+    longer, so not all of the gain on the original set is due to the new data.
+  - The Telegram validation posts come from the same channels as the training posts (split at
+    random by post). Templated posts that recur, like daily statistics or exam announcements, make
+    that set easier than truly new text.
+  - Validation loss was still falling at the end of training, so more data and longer training
+    remain the main levers.
+- Phases 4 and 5 above use the original `oromo-gpt-23m`.
+
 ### Phase 4: news-topic classification
 
 **Task:** [MasakhaNEWS](https://huggingface.co/datasets/masakhane/masakhanews) Oromo. Classify a BBC
@@ -280,6 +307,7 @@ scripts/
   12_instruction_finetune.py instruction tuning (learning-rate and epoch selection)
   13_evaluate_instructions.py before/after evaluation + all answers for human review
   14_import_telegram.py     optional: Telegram channel exports -> corpus (run before 02)
+  15_compare_pretraining.py compare pretraining runs on the same held-out text
 tests/                      tokenizer, data loader and model checks
 tokenizer/oromo-bpe.json    the chosen 16k tokenizer
 ```
