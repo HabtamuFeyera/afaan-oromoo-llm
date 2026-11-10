@@ -16,7 +16,7 @@ sized for the amount of Oromo text that actually exists.
 | 2 | Train an Oromo tokenizer (byte-level BPE) | 2 | ✅ Done |
 | 3 | Implement GPT and pretrain it on Oromo | 3, 4, 5 | ✅ Done |
 | 4 | Fine-tune for classification (news topics) | 6 | ✅ Done |
-| 5 | Instruction fine-tuning on Oromo instruction–response pairs | 7 | Planned |
+| 5 | Instruction fine-tuning on Oromo instruction–response pairs | 7 | ✅ Done (learns the format, not the content) |
 | 6 | Adapt a multilingual open model (continued pretraining + LoRA) and compare | App. E | Planned |
 
 ## Results so far
@@ -171,6 +171,59 @@ F1 per topic (mean over seeds):
   method). Only 1 of 325 test articles appears mostly in the pretraining text (on average, 5.5% of
   an article's 13-grams do). Scores without that article are unchanged to three decimals.
 
+### Phase 5: instruction fine-tuning
+
+**Data:** there is no Oromo instruction dataset, and translating the book's English one would
+bring in translation errors. So instruction tasks are made from real Oromo text (the approach the
+FLAN datasets used). Every answer is human-written Oromo; only the instruction templates are new.
+
+| Task | Instruction (one of two templates) | Answer | Train / val / test |
+|---|---|---|---:|
+| topic | *Oduun armaan gadii waa'ee maalii? Tokko filadhu: siyaasa, fayyaa, …* | the topic word | 1,128 / 162 / 325 |
+| headline | *Oduu armaan gadiitiif mata duree gabaabaa barreessi.* | the real BBC headline | 1,128 / 162 / 325 |
+| describe | *Waa'ee {X} ibsa gabaabaa kenni.* | the first sentence of X's Wikipedia article | 1,502 / 60 / 81 |
+
+The test articles never appear in training. The test "describe" articles were also never seen in
+pretraining.
+
+**Method:** the chapter 7 recipe, with these changes:
+- **Prompt format:** the Alpaca layout with Oromo section names (`### Qajeelfama:`,
+  `### Galtee:`, `### Deebii:`).
+- **Loss:** prompt tokens are masked out, so the model trains only on writing the answer (the
+  book's exercise 7.2).
+- **Truncation:** long articles are cut so instruction + article + answer fit 256 tokens.
+- **Training:** the Phase 3 model, all layers trained. Of 2 learning rates × 5 epochs, the best
+  validation loss was at 5e-5 after 2 epochs (6.45 → 4.05). With 2e-4 the model memorized the
+  training set: training loss fell to 2.0 while validation loss rose.
+
+**Results on the test set (greedy decoding)**
+
+| Task | Metric | Before instruction tuning | After | Reference |
+|---|---|---:|---:|---|
+| topic | answers that are a valid topic word | 0% | **100%** | – |
+| topic | accuracy / macro-F1 | 0% / 0.00 | 50.5% / 0.29 | Phase 4 classifier: 87.2% / 0.78; majority: 30.8% |
+| headline | ROUGE-L with the real headline | 0.005 | 0.025 | first 10 words of the article: **0.212** |
+| describe | ROUGE-L with the Wikipedia sentence | 0.024 | 0.079 | – |
+
+**Findings**
+- **Instruction tuning teaches the format.** Before tuning, the model just keeps writing news
+  text after the prompt. After tuning it answers in the right shape every time: a topic word for
+  topic questions, a short headline, one descriptive sentence.
+- **At 23M parameters it doesn't learn to use the input.** The answers barely depend on what the
+  model is given:
+  - Topic answers are almost always *fayyaa* or *ispoortii*, and never *teeknooloojii*.
+  - 240 of 325 generated headlines mention Covid, while only 53 of the real ones do. The model
+    falls back on the most common kind of training headline instead of reading the article.
+  - "Describe" answers for unseen entities are invented, often describing a district (*"Aanaan …"*)
+    even when asked about a country.
+  - A headline that just copies the article's first 10 words scores 8× better.
+- **Scale is the missing piece.** The same model reaches 87% on the topic task as a classifier
+  (Phase 4), so the knowledge is there. Turning it into instruction following needs more capacity,
+  which is why the book uses the 355M GPT-2 for this chapter. This is what Phase 6 tests:
+  instruction-tuning a larger, multilingual open model on the same data.
+- The instruction templates were written for this project and should be reviewed by a native
+  Oromo speaker.
+
 ## Project layout
 
 ```
@@ -181,6 +234,7 @@ oromo_llm/
   generate.py    greedy, temperature and top-k generation
   train.py       the book's loss functions and training loop + warmup, cosine decay, clipping
   classify.py    the book's classification fine-tuning (chapter 6) + macro-F1
+  instruct.py    the book's instruction fine-tuning (chapter 7): Oromo prompt format, masking
   text.py        Oromo text normalization (hudhaa, quotes, site labels)
 scripts/
   01_download.py            raw data from Hugging Face
@@ -193,6 +247,9 @@ scripts/
   08_evaluate.py            loss, perplexity, bits/char, baseline, samples
   09_prepare_news.py        MasakhaNEWS Oromo + contamination check
   10_finetune_news.py       topic classification: baselines vs fine-tuned GPTs
+  11_build_instructions.py  Oromo instruction data from news + Wikipedia
+  12_instruction_finetune.py instruction tuning (learning-rate and epoch selection)
+  13_evaluate_instructions.py before/after evaluation + all answers for human review
 tests/                      tokenizer, data loader and model checks
 tokenizer/oromo-bpe.json    the chosen 16k tokenizer
 ```
@@ -213,6 +270,9 @@ python scripts/07_pretrain.py
 python scripts/08_evaluate.py
 python scripts/09_prepare_news.py
 python scripts/10_finetune_news.py --epochs 10
+python scripts/11_build_instructions.py
+python scripts/12_instruction_finetune.py
+python scripts/13_evaluate_instructions.py
 ```
 
 Steps 1–6 take a few minutes. On an M1 Max, pretraining takes about 42 minutes and the
