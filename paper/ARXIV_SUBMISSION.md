@@ -11,6 +11,9 @@ Build the PDF and the upload archive with `sh paper/build.sh` (needs Tectonic: `
 - [ ] After endorsement: upload `paper/arxiv-source.tar.gz` to the saved submission.
 
 ## Before submitting
+- [ ] **Make the GitHub repository public again**: the abstract and the paper link to it, so readers and
+  moderators must be able to open it. Run `gh repo edit HabtamuFeyera/afaan-oromoo-llm --visibility public --accept-visibility-change-consequences`
+  or use the repository's Settings → General → Danger Zone → Change visibility.
 - [ ] Read the whole PDF once; check every number against the README and `checkpoints/*.json`.
 - [ ] Check the Oromo examples and the six instruction templates (Section 7) read naturally.
 - [ ] Decide on an affiliation and an email in the author block (`main.tex`, line ~16); "Independent researcher" is the placeholder.
