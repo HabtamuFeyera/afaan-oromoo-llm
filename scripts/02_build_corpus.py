@@ -4,13 +4,21 @@ Inputs (from 01_download.py)
 - data/raw/afriberta/afaanoromoo/{train,eval}.txt  one shuffled sentence per line
 - data/raw/wikipedia/20231101.om/*.parquet          one article per row
 
+- data/interim/telegram_{train,val}.jsonl            optional, from 14_import_telegram.py
+
 Outputs (data/processed/)
-- train.txt, val.txt   AfriBERTa sentences one per line, then Wikipedia articles;
-                       documents are separated by <|endoftext|> lines
+- train.txt, val.txt   AfriBERTa sentences one per line, then Wikipedia articles,
+                       then Telegram posts (if imported); documents are separated
+                       by <|endoftext|> lines
+- val_telegram.txt     held-out Telegram posts (only if imported)
 - stats.json           counts kept/dropped per rule and per source
 - dropped_sample.txt   a few dropped lines per rule, for spot checks
 
-Usage: python scripts/02_build_corpus.py
+Telegram posts are processed last, so they never change the other sources'
+output: train.txt starts with exactly the same text, val.txt is identical, and
+any Telegram line that repeats existing text is dropped as a duplicate.
+
+Usage: python scripts/02_build_corpus.py [--no-telegram]
 """
 
 import hashlib
@@ -122,7 +130,27 @@ def wiki_articles(builder: Builder):
             yield split, "\n".join(kept)
 
 
+def telegram_posts(builder: Builder, split: str):
+    """Yield cleaned Telegram posts (one document each) from 14_import_telegram.py output."""
+    path = ROOT / "data" / "interim" / f"telegram_{split}.jsonl"
+    source = f"telegram_{split}"
+    with open(path, encoding="utf-8") as f:
+        for row in f:
+            post = json.loads(row)
+            builder.stats[source]["input_posts"] += 1
+            kept = []
+            for raw in post["lines"]:
+                builder.stats[source]["input_lines"] += 1
+                line = builder.clean_line(raw, source)
+                if line:
+                    kept.append(line)
+            if kept:
+                builder.stats[source]["kept_posts"] += 1
+                yield "\n".join(kept)
+
+
 def main():
+    use_telegram = "--no-telegram" not in sys.argv and (ROOT / "data" / "interim" / "telegram_train.jsonl").exists()
     OUT.mkdir(parents=True, exist_ok=True)
     b = Builder()
 
@@ -148,11 +176,23 @@ def main():
                 f.write(f"\n{EOT}\n{art}")
             f.write("\n")
 
-    write(OUT / "train.txt", train_parts, wiki["train"])
+    # Telegram last: held-out posts first (so a train post never repeats one), then train posts.
+    telegram = {"train": [], "val": []}
+    if use_telegram:
+        telegram["val"] = list(telegram_posts(b, "val"))
+        telegram["train"] = list(telegram_posts(b, "train"))
+
+    write(OUT / "train.txt", train_parts, wiki["train"] + telegram["train"])
     write(OUT / "val.txt", val_parts, wiki["val"])
+    outputs = ["train", "val"]
+    if use_telegram:
+        (OUT / "val_telegram.txt").write_text(f"\n{EOT}\n".join(telegram["val"]) + "\n", encoding="utf-8")
+        outputs.append("val_telegram")
+    else:
+        (OUT / "val_telegram.txt").unlink(missing_ok=True)
 
     summary = {}
-    for name in ("train", "val"):
+    for name in outputs:
         text = (OUT / f"{name}.txt").read_text(encoding="utf-8")
         summary[name] = {
             "bytes": len(text.encode("utf-8")),

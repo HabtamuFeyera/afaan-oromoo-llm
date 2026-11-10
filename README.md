@@ -41,6 +41,35 @@ sized for the amount of Oromo text that actually exists.
   rules that were discarding real Oromo sentences.
 - No validation sentence also appears in the training set.
 
+#### Adding Telegram news channels (local only)
+
+Public Afaan Oromoo Telegram channels, exported with Telegram Desktop ("Export chat history"),
+are imported by `scripts/14_import_telegram.py`. The posts are copyrighted by their channels, so
+they stay in the git-ignored `data/` folder; only the importer is published.
+
+| Channel | Posts with text | Period | Words kept |
+|---|---:|---|---:|
+| OBN (Oromia Broadcasting Network) | 6,303 | Oct 2021 – Nov 2022 | 826k |
+| TIKVAH Afaan Oromoo | 4,652 | Jun 2019 – Nov 2026 | 434k |
+| Jawar Mohammed | 1,353 | Jan – Aug 2025 | 97k |
+| Oromia Times | 365 | Sep 2020 – Aug 2024 | 16k |
+
+**What the importer does:**
+- Strips hashtags, @handles, emojis and links.
+- Removes "signature" lines that appear in 3+ posts of a channel. For OBN that's 58,612 lines of
+  social-media link blocks, sign-offs and reporter bylines.
+- **Drops any post that shares a 13-word sequence with evaluation text** (the validation set and
+  the MasakhaNEWS dev/test articles). 15 posts were dropped this way.
+- The corpus builder then applies the usual line filters and deduplication. Telegram is processed
+  last, so `val.txt` is byte-identical and the earlier `train.txt` is an exact prefix of the new one.
+
+**Result:**
+- **Training text grows from 6.91M to 8.07M words** (11.07M → 12.97M tokens, +17%).
+- 5% of posts are held out as `val_telegram.txt` (65k words).
+- The Phase 3 model, which never saw these posts, scores perplexity **217** on them, against 171
+  on its usual validation set. The channels cover 2019–2026, newer events than the rest of the
+  corpus.
+
 ### Phase 2: a tokenizer for Oromo
 
 GPT-2's tokenizer was trained on English and breaks Oromo into fragments:
@@ -250,6 +279,7 @@ scripts/
   11_build_instructions.py  Oromo instruction data from news + Wikipedia
   12_instruction_finetune.py instruction tuning (learning-rate and epoch selection)
   13_evaluate_instructions.py before/after evaluation + all answers for human review
+  14_import_telegram.py     optional: Telegram channel exports -> corpus (run before 02)
 tests/                      tokenizer, data loader and model checks
 tokenizer/oromo-bpe.json    the chosen 16k tokenizer
 ```
@@ -274,6 +304,11 @@ python scripts/11_build_instructions.py
 python scripts/12_instruction_finetune.py
 python scripts/13_evaluate_instructions.py
 ```
+
+To include Telegram channels, put Telegram Desktop exports under `data/raw/telegram/<channel>/`,
+then run `scripts/14_import_telegram.py` (after `09_prepare_news.py`, which it uses for the overlap
+check) and rerun `02`, `03` and `06`. Without exports, the pipeline skips Telegram.
+The Phase 3–5 results above were produced before the Telegram data was added.
 
 Steps 1–6 take a few minutes. On an M1 Max, pretraining takes about 42 minutes and the
 classification experiments about 30 minutes. Both also run on CUDA, or slowly on CPU.

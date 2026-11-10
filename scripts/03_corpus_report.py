@@ -20,7 +20,8 @@ WORD_RE = re.compile(r"[^\W\d_]+(?:'[^\W\d_]+)*")
 def main():
     enc = tiktoken.get_encoding("gpt2")
     report = {}
-    for split in ("train", "val"):
+    splits = ["train", "val"] + (["val_telegram"] if (PROC / "val_telegram.txt").exists() else [])
+    for split in splits:
         text = (PROC / f"{split}.txt").read_text(encoding="utf-8")
         words = WORD_RE.findall(text)
         n_tok = len(enc.encode(text, allowed_special={"<|endoftext|>"}))

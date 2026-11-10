@@ -56,7 +56,8 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     meta = {"tokenizer": "tokenizer/oromo-bpe.json", "vocab_size": tok.n_vocab,
             "eot_token": tok.eot_token, "dtype": "uint16"}
-    for split in ("train", "val"):
+    splits = ["train", "val"] + (["val_telegram"] if (PROC / "val_telegram.txt").exists() else [])
+    for split in splits:
         arr = encode_file(tok, PROC / f"{split}.txt")
         arr.tofile(OUT / f"{split}.bin")
         meta[f"{split}_tokens"] = int(arr.size)

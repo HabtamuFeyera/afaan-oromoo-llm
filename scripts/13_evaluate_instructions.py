@@ -16,7 +16,6 @@ Usage: python scripts/13_evaluate_instructions.py
 """
 
 import json
-import re
 import sys
 from pathlib import Path
 
