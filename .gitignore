@@ -1,0 +1,18 @@
+# Large or regenerable outputs: recreate with scripts/01-07
+data/
+checkpoints/
+
+# Copyrighted book PDF: never publish
+*.pdf
+
+# Tokenizer experiments: only the chosen tokenizer and the comparison are versioned
+tokenizer/oromo-bpe-*.json
+tokenizer/naolbm-oromo-bbpe/
+
+# Python / OS
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.ipynb_checkpoints/
+.DS_Store

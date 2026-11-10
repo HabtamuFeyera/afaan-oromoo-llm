@@ -1,0 +1,62 @@
+{
+  "gpt2 (book)": {
+    "vocab_size": 50257,
+    "val_tokens": 1669554,
+    "chars_per_token": 2.34,
+    "tokens_per_word": 3.29,
+    "whole_word_pct": 7.5,
+    "roundtrip_ok": true,
+    "rare_token_pct": 91.2,
+    "embedding_params_M": 19.3
+  },
+  "NaolBM/Oromo-BBPE": {
+    "vocab_size": 12000,
+    "val_tokens": 853186,
+    "chars_per_token": 4.59,
+    "tokens_per_word": 1.68,
+    "whole_word_pct": 66.7,
+    "roundtrip_ok": true,
+    "rare_token_pct": 7.9,
+    "embedding_params_M": 4.6
+  },
+  "oromo-bpe-8000": {
+    "vocab_size": 8000,
+    "val_tokens": 875814,
+    "chars_per_token": 4.47,
+    "tokens_per_word": 1.73,
+    "whole_word_pct": 64.4,
+    "roundtrip_ok": true,
+    "rare_token_pct": 1.5,
+    "embedding_params_M": 3.1
+  },
+  "oromo-bpe-16000": {
+    "vocab_size": 16000,
+    "val_tokens": 785845,
+    "chars_per_token": 4.98,
+    "tokens_per_word": 1.55,
+    "whole_word_pct": 73.8,
+    "roundtrip_ok": true,
+    "rare_token_pct": 2.8,
+    "embedding_params_M": 6.1
+  },
+  "oromo-bpe-24000": {
+    "vocab_size": 24000,
+    "val_tokens": 746117,
+    "chars_per_token": 5.24,
+    "tokens_per_word": 1.47,
+    "whole_word_pct": 78.5,
+    "roundtrip_ok": true,
+    "rare_token_pct": 4.5,
+    "embedding_params_M": 9.2
+  },
+  "oromo-bpe-32000": {
+    "vocab_size": 32000,
+    "val_tokens": 722454,
+    "chars_per_token": 5.41,
+    "tokens_per_word": 1.42,
+    "whole_word_pct": 81.5,
+    "roundtrip_ok": true,
+    "rare_token_pct": 29.5,
+    "embedding_params_M": 12.3
+  }
+}
