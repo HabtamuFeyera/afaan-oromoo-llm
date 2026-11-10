@@ -1,0 +1,291 @@
+\documentclass[11pt]{article}
+\usepackage[preprint]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+
+\newcommand{\om}[1]{\textit{#1}}
+
+\title{Building an Afaan Oromoo Language Model from Scratch:\\Data, Tokenization, Pretraining and Adaptation on a Laptop}
+
+\author{Habtamu Feyera \\
+  Independent researcher \\
+  % TODO: add email and affiliation if desired
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We build a complete language-model pipeline for Afaan Oromoo, a widely spoken but under-resourced Cushitic language, on a single laptop (Apple M1 Max). Following the from-scratch recipe of \citet{raschka2025build}, we adapt each stage to Oromo: an 8.07M-word cleaned corpus that adds public Telegram news channels to AfriBERTa and Wikipedia; a byte-level BPE tokenizer that keeps the hudhaa (\texttt{'}) inside words and halves sequence length relative to GPT-2 (4.98 vs.\ 2.34 characters per token); and a 23M-parameter GPT pretrained in 46 minutes to 1.52 bits per character.
+Fine-tuned for news-topic classification on MasakhaNEWS, the pretrained model reaches 87.2\% accuracy and 0.779 macro-F1, against 0.558 for the same architecture trained from random weights and 0.749 for TF-IDF with logistic regression. Instruction tuning on 3,758 examples built from real Oromo text teaches the 23M model the answer format (100\% valid topic labels) but not to use its input; the same data with LoRA on an Oromo-adapted 0.8B model reaches 91.1\% topic accuracy and beats a lead baseline on headlines.
+Comparing open models in bits per character, our 23M model outperforms a general 752M multilingual model (1.51 vs.\ 2.88), while the same 752M model after African-language continued pretraining is best (1.45; 1.02 on posts published after its release). LoRA continued pretraining of Qwen3-0.6B on 2.5M Oromo tokens cuts its bits per character by 43\%. The results point to Oromo-specific data and tokenization, more than model size, as the main levers for small-scale Oromo language modeling. Code: \url{https://github.com/HabtamuFeyera/afaan-oromoo-llm}.
+\end{abstract}
+
+\section{Introduction}
+
+Afaan Oromoo is one of the most widely spoken languages in Africa, yet it has little digital text and few language models. General-purpose tokenizers and models are built mostly from English and other high-resource languages. They split Oromo words into many fragments and often fail to produce Oromo at all: prompted with \om{Afaan Oromoo}, a general 752M-parameter model continued in Afrikaans in our tests.
+
+This paper asks how far a single researcher with a laptop can get by building every stage for Oromo from the ground up. We follow the open, from-scratch GPT recipe of \citet{raschka2025build} and change what Oromo needs changed: the data, the tokenizer, the model size, the evaluation and the instruction data. We then compare the result with open multilingual models. We address four questions:
+\begin{enumerate}
+\item \textbf{Tokenization:} how much does an Oromo-specific tokenizer save over GPT-2's English-centric one?
+\item \textbf{Pretraining at small scale:} what can a 23M-parameter model learn from about 13M tokens of Oromo?
+\item \textbf{Transfer:} does that pretraining help downstream tasks, and does instruction tuning work at this scale?
+\item \textbf{Data versus size:} how does a small Oromo-only model compare with larger open models, before and after Oromo adaptation?
+\end{enumerate}
+
+\noindent Our contributions are:
+\begin{itemize}
+\item A reproducible cleaning pipeline for Oromo text that unifies the hudhaa, removes news-site boilerplate and checks every evaluation set for overlap with the training data.
+\item A byte-level BPE tokenizer that keeps the hudhaa inside words, with a vocabulary-size study.
+\item A 23M-parameter Oromo GPT evaluated on language modeling, topic classification and instruction following, with baselines and multiple seeds.
+\item A tokenizer-independent comparison (bits per character) with general and Africa-adapted open models, including our own LoRA continued pretraining.
+\item An instruction dataset built from real Oromo text rather than translation, and an analysis of why instruction tuning fails at 23M parameters.
+\end{itemize}
+
+\section{Related Work}
+
+\paragraph{Language models for African languages.} AfriBERTa \citep{ogueji2021afriberta} showed that small encoder models pretrained only on African languages can match much larger multilingual models; its corpus is our main pretraining source. MasakhaNEWS \citep{adelani2023masakhanews} provides news-topic classification for 16 African languages, including Oromo, which we use for downstream evaluation. AfriqueLLM \citep{yu2026afriquellm} continues pretraining open decoder models on African languages, Oromo included; we use its 0.8B model as a reference point.
+
+\paragraph{Tokenization.} Byte pair encoding \citep{sennrich2016bpe} and its byte-level form in GPT-2 \citep{radford2019gpt2} learn subwords from frequency, so languages rare in the training data are split into short fragments. An existing 12k byte-level BPE tokenizer for Oromo trained on AfriBERTa \citep{naolbm_oromo_bbpe} is our tokenizer baseline.
+
+\paragraph{Small models and limited data.} Our pretraining recipe follows \citet{raschka2025build}. \citet{muennighoff2023scaling} show that repeating data for up to about four epochs costs little compared with fresh data, which motivates our four passes over a fixed corpus.
+
+\paragraph{Contamination.} We follow the 13-gram overlap test of \citet{brown2020gpt3} to check evaluation sets against pretraining data.
+
+\paragraph{Instruction tuning and adaptation.} We build instruction data from existing labeled and structured text, as FLAN did \citep{wei2022flan,longpre2023flan}, and use an Alpaca-style prompt \citep{taori2023alpaca}. For adapting larger models we use LoRA \citep{hu2022lora}.
+
+\section{Data}
+\label{sec:data}
+
+The final pretraining corpus has 8.07M words of cleaned Oromo text from three sources (Table~\ref{tab:data}), plus held-out validation sets that no training text overlaps.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Source & Docs & Words \\
+\midrule
+AfriBERTa, Oromo subset & sentences & 6.54M \\
+Oromo Wikipedia (Nov 2023) & 1,772 & 0.36M \\
+Telegram channels (2019--2026) & 10,845 & 1.15M \\
+\midrule
+Total & & 8.07M \\
+\bottomrule
+\end{tabular}
+\caption{Training text by source. AfriBERTa is Apache-2.0 and Wikipedia CC BY-SA 4.0. Telegram posts (OBN, TIKVAH Afaan Oromoo, Jawar Mohammed, Oromia Times) remain under their channels' copyright and are used locally only.}
+\label{tab:data}
+\end{table}
+
+\paragraph{Cleaning.} Every line is normalized and filtered by the same rules. \emph{Hudhaa:} the raw AfriBERTa text writes the glottal-stop apostrophe two ways almost equally often (189k ASCII \texttt{'} and 173k U+2019), so a model would see two spellings of words like \om{baay'ee}; all apostrophe variants are mapped to ASCII \texttt{'}. \emph{Boilerplate:} links, Wikipedia citation marks, BBC photo-caption labels (\om{Madda suuraa}, \om{Ibsa waa'ee suuraa}) and site menus are removed, keeping the surrounding sentence. \emph{Filters:} lines are dropped if they have fewer than 3 words, contain Cyrillic or Arabic script, are more than 10\% Ethiopic, are mostly non-letters, or are mostly English function words. \emph{Deduplication:} exact duplicates are removed, ignoring case and punctuation; validation text is processed first, so a repeated line is always removed from training. A sample of every dropped rule is written out for review; a first pass dropped real sentences that began with a caption label, ended in an ellipsis or quoted a short English phrase, and fixing these rules recovered about 2\% of the text.
+
+\paragraph{Telegram channels.} Public channel histories were exported with Telegram Desktop. Hashtags, handles, emojis and links are removed. Any line that appears in three or more posts of a channel is treated as a signature and removed: 58,612 lines from OBN alone, mostly social-media link blocks, sign-offs and reporter bylines. Telegram text is appended last, so earlier outputs are unchanged.
+
+\paragraph{Contamination checks.} Any Telegram post that shares a single 13-word sequence with the validation set or the MasakhaNEWS dev and test articles is dropped (15 posts). In the other direction, only 1 of 325 MasakhaNEWS test articles has at least half of its 13-grams in the pretraining text; on average 5.5\% do.
+
+\paragraph{Splits.} Validation consists of the AfriBERTa evaluation split and 5\% of Wikipedia articles (0.51M words). A separate Telegram validation set holds 5\% of posts (65k words).
+
+\section{Tokenization}
+\label{sec:tok}
+
+An Oromo byte-level BPE tokenizer with a 16k vocabulary halves sequence length relative to GPT-2 (Table~\ref{tab:tok}).
+
+\paragraph{Design.} We train byte-level BPE, as in GPT-2, so no input is out of vocabulary. GPT-2's pre-tokenizer always splits at an apostrophe, which in Oromo cuts words such as \om{deebi'uun} and \om{ta'a} in two. Our pre-tokenizer keeps the hudhaa inside a word (\verb| ?\p{L}+(?:'\p{L}+)*|, followed by GPT-2's number, punctuation and whitespace patterns) and still separates quote marks at word edges. The sentence \om{Afaan Oromoo afaan ummata Oromoo kan Gaanfa Afrikaa keessa jiraatuuti.} takes 28 tokens with GPT-2 and 12 with ours.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Tokenizer & Vocab & C/T$\uparrow$ & T/W$\downarrow$ & 1-tok$\uparrow$ & Rare$\downarrow$ \\
+\midrule
+GPT-2 & 50,257 & 2.34 & 3.29 & 7.5 & 91.2 \\
+Oromo-BBPE & 12,000 & 4.59 & 1.68 & 66.7 & 7.9 \\
+Ours 8k & 8,000 & 4.47 & 1.73 & 64.4 & 1.5 \\
+\textbf{Ours 16k} & 16,000 & \textbf{4.98} & \textbf{1.55} & \textbf{73.8} & 2.8 \\
+Ours 24k & 24,000 & 5.24 & 1.47 & 78.5 & 4.5 \\
+Ours 32k & 32,000 & 5.41 & 1.42 & 81.5 & 29.5 \\
+\bottomrule
+\end{tabular}
+\caption{Tokenizers on the validation text. C/T: characters per token; T/W: tokens per word; 1-tok: \% of word occurrences that are a single token; Rare: \% of the vocabulary seen fewer than 50 times in training.}
+\label{tab:tok}
+\end{table}
+
+\paragraph{Vocabulary size.} We choose 16k. Moving to 24k shortens sequences by only 5\% but adds 50\% more embedding parameters. At 32k, 29.5\% of the vocabulary is seen fewer than 50 times, too rarely for a small model to learn. Our 16k tokenizer also compresses Oromo 8\% better than the existing 12k Oromo tokenizer. With it, the training corpus is 12.97M tokens, against 27.3M with GPT-2.
+
+\section{Pretraining}
+\label{sec:pretrain}
+
+\paragraph{Model.} We use the GPT architecture of \citet[ch.~4]{raschka2025build} unchanged: pre-LayerNorm transformer blocks with GELU feed-forward layers, learned absolute position embeddings and no weight tying, with 6 layers, 6 heads, width 384, a 256-token context (about 1,270 characters) and 23.0M parameters. Attention uses PyTorch's fused scaled-dot-product kernel, which we test to be numerically identical to the book's mask-and-softmax code. We train with AdamW (weight decay 0.1, peak learning rate $6\times10^{-4}$, 2\% linear warmup, cosine decay to 10\%, gradient clipping at 1.0) on batches of $32\times256$ tokens for four passes over the corpus, at about 18k tokens/s on an Apple M1 Max GPU.
+
+\paragraph{Runs.} The first run trains on the corpus without Telegram (11.07M tokens, 5,400 steps, 42 minutes); the second adds the Telegram data (12.97M tokens, 6,328 steps, 46 minutes). Both keep the checkpoint with the lowest validation loss. Validation loss improves at every checkpoint (Figure~\ref{fig:loss}); the final gap between training and validation loss is 0.23 and 0.31, so neither run overfits and more data or longer training should still help.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/val_loss.pdf}
+\caption{Validation loss falls from 7.3 to 5.1 and is still falling when training stops. Loss on 40 validation batches every 250 steps.}
+\label{fig:loss}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+& \multicolumn{2}{c}{Validation} & \multicolumn{2}{c}{Telegram} \\
+\cmidrule(lr){2-3}\cmidrule(l){4-5}
+Model & PPL & BPC & PPL & BPC \\
+\midrule
+Unigram & 3,147 & 2.41 & -- & -- \\
+GPT, no Telegram & 171 & 1.536 & 217 & 1.516 \\
+GPT, + Telegram & \textbf{163} & \textbf{1.522} & \textbf{96} & \textbf{1.286} \\
+\bottomrule
+\end{tabular}
+\caption{Language modeling on held-out text. Perplexity is per token of our tokenizer; bits per character (BPC) is tokenizer-independent.}
+\label{tab:lm}
+\end{table}
+
+\paragraph{Results.} Table~\ref{tab:lm} reports perplexity and bits per character. Adding 17\% more text, all newer news, cuts bits per character on held-out Telegram posts by 15\% and still improves the original validation set by 1\%. Two caveats apply: the second run also took 17\% more optimizer steps, and Telegram validation posts come from the same channels as the training posts, so recurring templated posts make that set easier than new text.
+
+\paragraph{Samples.} Generations at temperature 0.7 are fluent-looking news Oromo with correct hudhaa forms and quoting style, but their meaning drifts: \om{Mootummaan naannoo Oromiyaas ta'e kan naannoo Benishaangul Gumuz, naannoo Amaaraa, magaalaa Naqamtee fi magaalota naannoo Sumaalee jiraatan keessatti \dots} At temperature 0 the model loops (\om{Afaan Oromoo, Afaan Oromoo, \dots}). Of the words generated at temperature 0.7, 93\% occur in the training text.
+
+\section{Topic Classification}
+\label{sec:cls}
+
+\paragraph{Task.} MasakhaNEWS Oromo assigns BBC Afaan Oromoo articles to five topics, with 1,128 training, 162 dev and 325 test articles. Topics are unbalanced (technology has only 50 training articles), so we report macro-F1 alongside accuracy. The model reads the headline and the start of the article, cut to the 256-token context.
+
+\paragraph{Method.} Following \citet[ch.~6]{raschka2025build}, the 16k-word output layer is replaced by a 5-class head, and the class is read at the last real token. We compare a majority-class baseline; TF-IDF word uni- and bigrams with logistic regression (C tuned on dev); and the GPT trained from random initialization, from pretraining with only the last block, final norm and head trained (the book's recipe, 1.8M parameters), and from pretraining with all layers trained (16.9M parameters). Each GPT setup tries learning rates $\{5\times10^{-5}, 2\times10^{-4}, 5\times10^{-4}\}$ for up to 10 epochs, keeps the best epoch on dev macro-F1, and reruns the best rate with 3 seeds. These experiments use the pretrained model without Telegram.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/topic_f1.pdf}
+\caption{Pretraining raises test macro-F1 from 0.56 to 0.78, edging out TF-IDF (0.75). GPT systems: mean of 3 seeds, whiskers $\pm1$ SD.}
+\label{fig:f1}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Topic (train) & TF-IDF & GPT rand. & GPT pretr. \\
+\midrule
+Sports (280) & \textbf{0.98} & 0.90 & 0.93 \\
+Health (338) & 0.88 & 0.80 & \textbf{0.91} \\
+Politics (350) & 0.87 & 0.76 & \textbf{0.90} \\
+Entertainment (110) & \textbf{0.60} & 0.23 & 0.58 \\
+Technology (50) & 0.42 & 0.11 & \textbf{0.58} \\
+\bottomrule
+\end{tabular}
+\caption{F1 per topic (GPT systems: all layers trained, mean of 3 seeds).}
+\label{tab:pertopic}
+\end{table}
+
+\paragraph{Results.} Pretraining is what makes the model competitive (Figure~\ref{fig:f1}): macro-F1 rises from 0.558 to 0.779 and accuracy from 73.1\% to 87.2\%, edging out TF-IDF (0.749, 86.8\%). The gain is largest on rare topics (Table~\ref{tab:pertopic}): technology F1 rises from 0.11 to 0.58, above TF-IDF's 0.42, because the model has already seen their vocabulary in unlabeled text. TF-IDF still wins on sports, where team and player names decide the topic. Training a tenth of the parameters (the book's recipe) recovers about half of the gain over random initialization. Removing the one test article found in the pretraining data changes no score at three decimals.
+
+\section{Instruction Tuning}
+\label{sec:inst}
+
+\paragraph{Data.} No Oromo instruction dataset exists, and translating an English one would bring in translation errors. We therefore build tasks from real Oromo text, as FLAN did; every answer is human-written Oromo, and only the instruction templates (two per task) were written for this work. \emph{Topic} asks for the topic word of a MasakhaNEWS article (\om{Oduun armaan gadii waa'ee maalii? Tokko filadhu: siyaasa, fayyaa, ispoortii, bashannanaa, teeknooloojii.}); \emph{headline} asks for its real headline (\om{Oduu armaan gadiitiif mata duree gabaabaa barreessi.}); \emph{describe} asks for the first sentence of an entity's Wikipedia article (\om{Waa'ee \{X\} ibsa gabaabaa kenni.}). This gives 3,758 training, 384 validation and 731 test examples; news items follow the MasakhaNEWS splits, and test \emph{describe} items come from Wikipedia articles held out of pretraining.
+
+\paragraph{Method.} We use the recipe of \citet[ch.~7]{raschka2025build} with an Alpaca-style prompt whose section names are in Oromo (\texttt{\#\#\# Qajeelfama:}, \texttt{\#\#\# Galtee:}, \texttt{\#\#\# Deebii:}). Prompt tokens are masked out of the loss, and articles are cut so the example fits 256 tokens. Of two learning rates and five epochs, the best validation loss came at $5\times10^{-5}$ after 2 epochs (6.45 to 4.05); at $2\times10^{-4}$ the model memorized the training set.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}llrr@{}}
+\toprule
+Task & Metric & Before & After \\
+\midrule
+Topic & valid label & 0\% & \textbf{100\%} \\
+Topic & acc.\ / macro-F1 & 0\% / 0.00 & 50.5\% / 0.29 \\
+Headline & ROUGE-L & 0.005 & 0.025 \\
+Describe & ROUGE-L & 0.024 & 0.079 \\
+\bottomrule
+\end{tabular}
+\caption{Instruction following of the 23M model on the test set (greedy decoding). References: the topic classifier of \S\ref{sec:cls} reaches 87.2\% / 0.78 and the majority class 30.8\%; copying an article's first 10 words as its headline scores ROUGE-L 0.212.}
+\label{tab:inst}
+\end{table}
+
+\paragraph{Results.} Instruction tuning teaches the format but not the use of the input (Table~\ref{tab:inst}). Topic answers are almost always \om{fayyaa} or \om{ispoortii} and never \om{teeknooloojii}. 240 of 325 generated headlines mention Covid-19, against 53 of the real ones: the model falls back on the most common kind of training headline. Descriptions of unseen entities are invented, often describing a district (\om{Aanaan \dots}) even for a country. The same weights classify topics at 87\% with a classification head, so the information is present; turning it into instruction following appears to need more capacity, which is why \citet{raschka2025build} uses the 355M GPT-2 for this step.
+
+\section{Comparison with Open Models}
+\label{sec:open}
+
+\paragraph{Models and measurement.} We compare Qwen3.5-0.8B-Base \citep{qwen2026qwen35}, a general multilingual base model (752M parameters); AfriqueQwen3.5-0.8B \citep{yu2026afriquellm}, the same model after continued pretraining on African languages including Oromo; Qwen3-0.6B-Base \citep{yang2025qwen3} before and after our own LoRA continued pretraining; and our GPT with Telegram data. All models score the same text in bits per character. Each gets about 1,300 characters of context (256 tokens for ours, 512 for the Qwen tokenizers, which average 2.5 characters per Oromo token), and a sliding window scores every character with at least half a window of context. Test sets are the first 150k characters of the validation set and of the held-out Telegram posts, and 28 held-out posts (25k characters) published after AfriqueLLM's January 2026 release, which no model here can have seen. AfriqueLLM's training data may include text like our validation set, which comes from AfriBERTa and Wikipedia.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/open_models.pdf}
+\caption{Oromo data beats size. Bars: bits per character on 28 Telegram posts from 2026 that no model saw; ticks: validation set.}
+\label{fig:open}
+\end{figure}
+
+\paragraph{Out-of-the-box Oromo.} The general Qwen3.5 model is far behind our 23M model on every set (2.88 vs.\ 1.51 bits per character on validation; Figure~\ref{fig:open}); prompted with \om{Afaan Oromoo}, it continues in Afrikaans. After African-language continued pretraining, the identical architecture produces fluent Oromo and is the best model on every set; its margin over ours is largest on the unseen 2026 posts (1.02 vs.\ 1.38).
+
+\paragraph{Our own continued pretraining.} We continued pretraining Qwen3-0.6B-Base on 2.5M tokens of our corpus with LoRA: rank-64 adapters on every attention and MLP projection (40M trainable parameters), 55 minutes at about 800 tokens/s. Validation bits per character fell 43\%, from 3.14 to 1.80, and similarly on Telegram (2.63 to 1.48). The adapted model still trails our 23M model, which saw the full corpus four times, and AfriqueQwen, which was adapted with far more data.
+
+\paragraph{Instruction tuning at 0.8B.} To test whether the failure of \S\ref{sec:inst} is one of scale, we instruction-tune AfriqueQwen3.5-0.8B on the same data with the same prompt and prompt masking. LoRA adapters of rank 16 on all attention, linear-attention and MLP projections (10.2M trainable parameters) train for one epoch at learning rate $2\times10^{-4}$, with examples cut to 384 tokens (about 950 characters). Training took about an hour; validation loss on answer tokens is 1.30.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}llrr@{}}
+\toprule
+Task & Metric & 23M & 0.8B \\
+\midrule
+Topic & accuracy & 50.5\% & \textbf{91.1\%} \\
+Topic & macro-F1 & 0.29 & \textbf{0.87} \\
+Headline & ROUGE-L & 0.025 & \textbf{0.254} \\
+Describe & ROUGE-L & 0.079 & \textbf{0.186} \\
+\bottomrule
+\end{tabular}
+\caption{Instruction following on the full test set: our 23M model (\S\ref{sec:inst}) against AfriqueQwen3.5-0.8B with LoRA instruction tuning on the same data. Copying an article's first 10 words as its headline scores ROUGE-L 0.212.}
+\label{tab:inst08}
+\end{table}
+
+The larger, Oromo-adapted model follows instructions and uses its input (Table~\ref{tab:inst08}). Topic accuracy rises from 50.5\% to 91.1\% and macro-F1 from 0.29 to 0.87, with F1 of at least 0.73 on every topic (0.80 on technology). Its headlines beat the copy-the-first-10-words baseline (0.254 vs.\ 0.212), and only 58 of 325 mention Covid-19, against 53 of the real ones. Descriptions of unseen entities improve but remain the weakest task; 3 of 81 degenerate into repetition under greedy decoding. Before instruction tuning, on the first 150 test articles, the same model never produced a valid topic label, although its headline continuations already scored ROUGE-L 0.135. Topic accuracy exceeds our classifier of \S\ref{sec:cls} (87.2\%), but AfriqueLLM's pretraining corpus may contain BBC Afaan Oromoo articles like the MasakhaNEWS test set, which we cannot check, and this result is from a single run.
+
+\paragraph{Compute note.} Training Qwen3.5 on a Mac ran at only 92--290 tokens/s: its linear-attention layers have fast kernels only for NVIDIA GPUs, so PyTorch falls back to a slow reference implementation. We therefore used Qwen3 for our own continued pretraining and kept Qwen3.5 to inference and one epoch of instruction tuning.
+
+\section{Discussion}
+
+For small-scale Oromo modeling, the evidence points to data and tokenization before model size. English-built tokenizers spend about twice as many tokens on Oromo (2.3--2.6 characters per token, against 5.0 for ours), which halves the text a fixed context window can hold. A 23M model trained only on Oromo beats a general 752M model by almost $2\times$ in bits per character; once the larger model receives Oromo-rich continued pretraining, it becomes the strongest. Pretraining transfers to topic classification, most strongly for topics with few labeled examples. Instruction following needs more capacity than 23M parameters: the small model learns the format but not to read its input, while an Oromo-adapted 0.8B model tuned on the same 3,758 examples follows the instructions and uses its input.
+
+\section{Conclusion}
+
+A single laptop is enough to build a working Oromo language-modeling pipeline, and the largest gains come from Oromo-specific data and tokenization. A hudhaa-aware 16k tokenizer halves sequence length; a 23M-parameter GPT trained in under an hour outperforms a general 752M model on Oromo and, fine-tuned, matches a strong TF-IDF baseline on topic classification. Instruction following does not emerge at this scale, but the same instruction data turns an Oromo-adapted 0.8B model into a working Oromo instruction follower on a laptop. Next steps are native-speaker evaluation, more data beyond news, multi-seed instruction tuning of larger Oromo-adapted models, broader benchmarks that include Oromo such as Belebele and SIB-200, and a public release of the tokenizer and of model weights trained on redistributable data.
+
+\section*{Limitations}
+
+The test sets are small (325 news articles, 81 descriptions, 28 posts in the unseen 2026 set), so differences of a few points can be noise; we report seed spreads where we can. Generated text and the instruction templates have not been rated by native speakers, and ROUGE-L against one reference is a weak measure of headline quality. The data is mostly news, and Telegram validation posts come from the same channels as the training posts. All training ran on one laptop: pretraining used four passes over the corpus, our continued pretraining saw only a fifth of it, and the faster Qwen3.5 kernels exist only for NVIDIA GPUs. The run with Telegram data also took 17\% more optimizer steps, and AfriqueQwen and our adapted Qwen3 start from different base models. The 0.8B instruction-tuning result is a single run of one epoch, and AfriqueLLM's pretraining corpus may overlap with the MasakhaNEWS test articles, which we cannot check.
+
+\section*{Ethics Statement}
+
+All training text comes from public sources. We release code, the trained tokenizer and the cleaning rules (Apache-2.0); AfriBERTa (Apache-2.0), Oromo Wikipedia (CC BY-SA 4.0) and MasakhaNEWS (AFL-3.0) are downloaded by the scripts. Telegram posts remain under their channels' copyright and are not released, nor are weights trained on them; the released importer lets others rebuild the corpus from their own exports. The data is mostly news and includes reporting on conflict, politics and public health; one channel is a politician's and carries opinion rather than reporting. Posts can name public figures and private individuals, and we did not test the models for memorization of individual posts. The models are research artifacts for low-resource language modeling and are not suitable for producing news, health information or any content presented as fact.
+
+\section*{Acknowledgments}
+
+This work was carried out with substantial assistance from an AI assistant (Claude, by Anthropic), which wrote much of the code and a first draft of the text under the author's direction. The author directed the project, collected the Telegram data, reviewed the results and takes full responsibility for the content.
+
+\bibliography{references}
+
+\appendix
+
+\section{Reproducibility}
+\label{sec:repro}
+
+Every result comes from numbered scripts in the public repository, run on one Apple M1 Max with 64 GB of memory: data preparation (\texttt{01}--\texttt{03}, \texttt{14}; about 1 minute), tokenizers and encoding (\texttt{04}--\texttt{06}; 2 minutes), pretraining (\texttt{07}; 42--46 minutes), its evaluation (\texttt{08}, \texttt{15}), topic classification (\texttt{09}, \texttt{10}; 30 minutes), instruction tuning (\texttt{11}--\texttt{13}; 15 minutes), open-model comparison (\texttt{16}; 6 minutes), LoRA continued pretraining (\texttt{17}; 55 minutes), LoRA instruction tuning and its full-test evaluation (\texttt{18}, \texttt{20}; about 2.5 hours) and the figures (\texttt{19}). Software: PyTorch 2.12 (MPS), Hugging Face \texttt{tokenizers} 0.22, \texttt{transformers} 5.9 and \texttt{peft} 0.21. Pretraining uses seed 123 and classification seeds 1--3; cleaning, splits and sampling are deterministic. The repository's 16 tests cover the tokenizer, data loaders, the model's attention against the book's reference code, and the classification and instruction-tuning data handling. Telegram text must be exported by each user; without it the pipeline skips that source and reproduces the results without Telegram.
+
+\end{document}

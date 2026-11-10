@@ -16,3 +16,14 @@ __pycache__/
 .venv/
 .ipynb_checkpoints/
 .DS_Store
+
+# Paper build outputs (rebuild with sh paper/build.sh)
+paper/*.aux
+paper/*.log
+paper/*.blg
+paper/*.out
+paper/arxiv-source.tar.gz
+
+# The paper and its figures are published (the *.pdf rule above keeps the book out)
+!paper/main.pdf
+!paper/figures/*.pdf

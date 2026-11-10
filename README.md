@@ -17,7 +17,7 @@ sized for the amount of Oromo text that actually exists.
 | 3 | Implement GPT and pretrain it on Oromo | 3, 4, 5 | ✅ Done |
 | 4 | Fine-tune for classification (news topics) | 6 | ✅ Done |
 | 5 | Instruction fine-tuning on Oromo instruction–response pairs | 7 | ✅ Done (learns the format, not the content) |
-| 6 | Adapt a multilingual open model (continued pretraining + LoRA) and compare | App. E | Planned |
+| 6 | Compare with open multilingual models; LoRA continued pretraining and instruction tuning | App. E | ✅ Done |
 
 ## Results so far
 
@@ -280,6 +280,49 @@ pretraining.
 - The instruction templates were written for this project and should be reviewed by a native
   Oromo speaker.
 
+### Phase 6: open multilingual models
+
+**Out-of-the-box Oromo.** Bits per character (lower is better) on the same text, each model given
+about 1,300 characters of context (`scripts/16_oromo_skill.py`). "Telegram 2026" is 28 held-out posts
+published after AfriqueLLM's January 2026 release, so no model here can have seen them.
+
+| Model | Params | Validation | Telegram | Telegram 2026 |
+|---|---:|---:|---:|---:|
+| Qwen3-0.6B-Base (general) | 0.6B | 3.135 | 2.628 | 2.633 |
+| Qwen3.5-0.8B-Base (general) | 752M | 2.881 | 2.430 | 2.418 |
+| Qwen3-0.6B + **our LoRA continued pretraining** (2.5M tokens, 55 min) | 0.6B | 1.798 | 1.478 | 1.458 |
+| **Our GPT** (Oromo only) | 23M | 1.512 | 1.360 | 1.381 |
+| AfriqueQwen3.5-0.8B (African-language continued pretraining) | 752M | **1.452** | **1.078** | **1.024** |
+
+- **Oromo data beats size.** Our 23M model beats a general 752M model by almost 2× (that model
+  continues an Oromo prompt in Afrikaans). The same 752M model after African-language pretraining
+  is best everywhere.
+- **Our own LoRA continued pretraining** of Qwen3-0.6B cut its bits per character by 43%.
+
+**Instruction tuning at 0.8B.** LoRA instruction tuning of AfriqueQwen3.5-0.8B on the Phase 5 data
+(one epoch, about an hour; `scripts/18_instruct_open_model.py`, full-test scoring by
+`scripts/20_eval_open_model_full.py`):
+
+| Task | Metric | 23M (Phase 5) | AfriqueQwen 0.8B + LoRA | Reference |
+|---|---|---:|---:|---|
+| Topic | Accuracy / macro-F1 | 50.5% / 0.29 | **91.1% / 0.87** | Phase 4 classifier: 87.2% / 0.78 |
+| Headline | ROUGE-L | 0.025 | **0.254** | First 10 words: 0.212 |
+| Describe | ROUGE-L | 0.079 | **0.186** | – |
+
+The failure in Phase 5 was one of scale: with the same 3,758 examples, the larger Oromo-adapted model
+reads its input. It gets every topic at F1 ≥ 0.73, and its headlines no longer collapse to Covid
+stories. Two caveats: it's a single run, and AfriqueLLM's pretraining data may include BBC Oromo
+articles like the test set.
+
+**On a Mac:** Qwen3.5's linear-attention layers have fast kernels only for NVIDIA GPUs, so LoRA
+training runs at 90–290 tokens/s. That's why our own continued pretraining used Qwen3.
+
+## Paper
+
+[`paper/`](paper) holds the arXiv version: 8 pages in ACL style. Rebuild the PDF and the upload
+archive with `sh paper/build.sh` (needs `brew install tectonic`), and see
+[`paper/ARXIV_SUBMISSION.md`](paper/ARXIV_SUBMISSION.md) for the submission steps.
+
 ## Project layout
 
 ```
@@ -308,6 +351,13 @@ scripts/
   13_evaluate_instructions.py before/after evaluation + all answers for human review
   14_import_telegram.py     optional: Telegram channel exports -> corpus (run before 02)
   15_compare_pretraining.py compare pretraining runs on the same held-out text
+  16_oromo_skill.py         bits per character of any model on the same Oromo text
+  17_continued_pretraining.py LoRA continued pretraining of an open model on Oromo
+  18_instruct_open_model.py LoRA instruction tuning of an open model on the Phase 5 data
+  19_paper_figures.py       the paper's figures, drawn from the saved results
+  20_eval_open_model_full.py full-test evaluation of the tuned open model
+  prompt.py                 type prompts to the trained models
+paper/                      the arXiv paper (LaTeX, figures, build script)
 tests/                      tokenizer, data loader and model checks
 tokenizer/oromo-bpe.json    the chosen 16k tokenizer
 ```

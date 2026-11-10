@@ -1,0 +1,115 @@
+\begin{thebibliography}{15}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[{Adelani et~al.(2023)}]{adelani2023masakhanews}
+David~Ifeoluwa Adelani et~al. 2023.
+\newblock \href {https://aclanthology.org/2023.ijcnlp-main.10/} {{MasakhaNEWS}:
+  News topic classification for {A}frican languages}.
+\newblock In \emph{Proceedings of the 13th International Joint Conference on
+  Natural Language Processing and the 3rd Conference of the Asia-Pacific
+  Chapter of the Association for Computational Linguistics (IJCNLP-AACL)}.
+
+\bibitem[{Brown et~al.(2020)Brown, Mann, Ryder, Subbiah, Kaplan
+  et~al.}]{brown2020gpt3}
+Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, et~al.
+  2020.
+\newblock Language models are few-shot learners.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}.
+
+\bibitem[{Hu et~al.(2022)Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, and
+  Chen}]{hu2022lora}
+Edward~J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean
+  Wang, Lu~Wang, and Weizhu Chen. 2022.
+\newblock \href {https://openreview.net/forum?id=nZeVKeeFYf9} {{LoRA}: Low-rank
+  adaptation of large language models}.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}.
+
+\bibitem[{Longpre et~al.(2023)Longpre, Hou, Vu, Webson, Chung, Tay, Zhou, Le,
+  Zoph, Wei, and Roberts}]{longpre2023flan}
+Shayne Longpre, Le~Hou, Tu~Vu, Albert Webson, Hyung~Won Chung, Yi~Tay, Denny
+  Zhou, Quoc~V. Le, Barret Zoph, Jason Wei, and Adam Roberts. 2023.
+\newblock The {F}lan collection: Designing data and methods for effective
+  instruction tuning.
+\newblock In \emph{Proceedings of the 40th International Conference on Machine
+  Learning (ICML)}, volume 202 of \emph{PMLR}, pages 22631--22648.
+
+\bibitem[{Muennighoff et~al.(2023)Muennighoff, Rush, Barak, Le~Scao, Tazi,
+  Piktus, Pyysalo, Wolf, and Raffel}]{muennighoff2023scaling}
+Niklas Muennighoff, Alexander~M. Rush, Boaz Barak, Teven Le~Scao, Nouamane
+  Tazi, Aleksandra Piktus, Sampo Pyysalo, Thomas Wolf, and Colin Raffel. 2023.
+\newblock Scaling data-constrained language models.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}.
+
+\bibitem[{{NaolBM}()}]{naolbm_oromo_bbpe}
+{NaolBM}.
+\newblock \href {https://huggingface.co/NaolBM/Oromo-BBPE} {{Oromo-BBPE}: a
+  byte-level {BPE} tokenizer for {A}faan {O}romo}.
+\newblock Hugging Face model repository.
+\newblock Accessed November 2026.
+
+\bibitem[{Ogueji et~al.(2021)Ogueji, Zhu, and Lin}]{ogueji2021afriberta}
+Kelechi Ogueji, Yuxin Zhu, and Jimmy Lin. 2021.
+\newblock \href {https://doi.org/10.18653/v1/2021.mrl-1.11} {Small data? no
+  problem! exploring the viability of pretrained multilingual language models
+  for low-resourced languages}.
+\newblock In \emph{Proceedings of the 1st Workshop on Multilingual
+  Representation Learning}, pages 116--126.
+
+\bibitem[{{Qwen Team}(2026)}]{qwen2026qwen35}
+{Qwen Team}. 2026.
+\newblock \href {https://huggingface.co/Qwen/Qwen3.5-0.8B-Base} {{Qwen3.5}:
+  Towards native multimodal agents}.
+\newblock Blog post.
+
+\bibitem[{Radford et~al.(2019)Radford, Wu, Child, Luan, Amodei, and
+  Sutskever}]{radford2019gpt2}
+Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and Ilya
+  Sutskever. 2019.
+\newblock Language models are unsupervised multitask learners.
+\newblock Technical report, OpenAI.
+
+\bibitem[{Raschka(2025)}]{raschka2025build}
+Sebastian Raschka. 2025.
+\newblock \emph{Build a Large Language Model (From Scratch)}.
+\newblock Manning, Shelter Island, NY.
+
+\bibitem[{Sennrich et~al.(2016)Sennrich, Haddow, and Birch}]{sennrich2016bpe}
+Rico Sennrich, Barry Haddow, and Alexandra Birch. 2016.
+\newblock Neural machine translation of rare words with subword units.
+\newblock In \emph{Proceedings of the 54th Annual Meeting of the Association
+  for Computational Linguistics (ACL)}, pages 1715--1725.
+
+\bibitem[{Taori et~al.(2023)Taori, Gulrajani, Zhang, Dubois, Li, Guestrin,
+  Liang, and Hashimoto}]{taori2023alpaca}
+Rohan Taori, Ishaan Gulrajani, Tianyi Zhang, Yann Dubois, Xuechen Li, Carlos
+  Guestrin, Percy Liang, and Tatsunori~B. Hashimoto. 2023.
+\newblock \href {https://github.com/tatsu-lab/stanford_alpaca} {Stanford
+  {A}lpaca: An instruction-following {LLaMA} model}.
+\newblock GitHub repository.
+
+\bibitem[{Wei et~al.(2022)Wei, Bosma, Zhao, Guu, Yu, Lester, Du, Dai, and
+  Le}]{wei2022flan}
+Jason Wei, Maarten Bosma, Vincent~Y. Zhao, Kelvin Guu, Adams~Wei Yu, Brian
+  Lester, Nan Du, Andrew~M. Dai, and Quoc~V. Le. 2022.
+\newblock Finetuned language models are zero-shot learners.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}.
+
+\bibitem[{Yang et~al.(2025)}]{yang2025qwen3}
+An~Yang et~al. 2025.
+\newblock {Qwen3} technical report.
+\newblock \emph{arXiv preprint arXiv:2505.09388}.
+
+\bibitem[{Yu et~al.(2026)Yu, Xu, Hedderich, Hamidouche, Zamir, and
+  Adelani}]{yu2026afriquellm}
+Hao Yu, Tianyi Xu, Michael~A. Hedderich, Wassim Hamidouche, Syed~Waqas Zamir,
+  and David~Ifeoluwa Adelani. 2026.
+\newblock \href {https://arxiv.org/abs/2601.06395} {{AfriqueLLM}: How data
+  mixing and model architecture impact continued pre-training for {A}frican
+  languages}.
+\newblock \emph{arXiv preprint arXiv:2601.06395}.
+
+\end{thebibliography}
