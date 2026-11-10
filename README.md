@@ -14,7 +14,7 @@ sized for the amount of Oromo text that actually exists.
 |---|---|---|---|
 | 1 | Collect, clean and deduplicate an Oromo corpus | 2 | ✅ Done |
 | 2 | Train an Oromo tokenizer (byte-level BPE) | 2 | ✅ Done |
-| 3 | Implement GPT and pretrain it on Oromo | 3, 4, 5 | 🏃 Training |
+| 3 | Implement GPT and pretrain it on Oromo | 3, 4, 5 | ✅ Done |
 | 4 | Fine-tune for classification (sentiment / news topics) | 6 | Planned |
 | 5 | Instruction fine-tuning on Oromo instruction–response pairs | 7 | Planned |
 | 6 | Adapt a multilingual open model (continued pretraining + LoRA) and compare | App. E | Planned |
@@ -72,14 +72,56 @@ about those tokens.
 much Oromo. 24k saves only about 5% more tokens but costs 50% more embedding weights, and 32k leaves
 30% of its vocabulary almost untrained.
 
-### Phase 3: pretraining (in progress)
+### Phase 3: pretraining
 
 - **Model:** the book's GPT architecture: 23.0M parameters, 6 layers, 6 heads, 384-wide embeddings,
   256-token context, 16k vocabulary.
-- **Training:** 4 passes over the training tokens on an Apple M1 Max (MPS), about 20k tokens/s.
-- **Optimizer:** AdamW with learning-rate warmup, cosine decay and gradient clipping.
-- **Results:** validation loss, perplexity, bits per character, comparison with a unigram baseline,
-  and sample text will appear here when the run finishes.
+- **Training:** 4 passes over the 11M training tokens (5,400 steps of 32 × 256 tokens).
+  It took 42 minutes on an Apple M1 Max (MPS) at about 18k tokens/s.
+- **Optimizer:** AdamW with weight decay 0.1. The learning rate warms up to 6e-4, then follows a
+  cosine decay; gradients are clipped at 1.0.
+
+| Step | Pass | Train loss | Val loss | Val perplexity |
+|---:|---:|---:|---:|---:|
+| 0 | – | – | 9.85 | ~19,000 (random) |
+| 250 | 1 | 7.26 | 7.24 | 1,389 |
+| 1,000 | 1 | 5.89 | 5.93 | 376 |
+| 2,500 | 2 | 5.24 | 5.39 | 220 |
+| 4,000 | 3 | 4.99 | 5.20 | 181 |
+| 5,400 | 4 | 4.91 | **5.14** | **171** |
+
+Evaluation of the final model on the whole validation set (`scripts/08_evaluate.py`):
+
+| Metric | GPT (23M) | Unigram baseline* |
+|---|---:|---:|
+| Validation loss | 5.14 | 8.05 |
+| Perplexity (per token) | 171 | 3,147 |
+| Bits per character | **1.54** | 2.41 |
+| Generated words that are real Oromo words (T=0.7) | 93% | – |
+
+\*Knows only how often each token appears, with no context. The gap to the GPT is what the model
+learned about context.
+
+**Samples** (temperature 0.7, top-k 50; the prompt is in bold, ` / ` is a line break):
+
+> **Mootummaan naannoo Oromiyaa** keessa jiran hedduu kan himan Obbo Lammaan, ammas hojiin amma hin
+> jirretti waan hin arganne. / Obbo Lidatuu Ayyaaloo, Obbo Jawaar Mahaammad fi Obbo Lammaa Magarsaa
+> akka ta'an himaniiru. / ''Humni addaa kun kan raawwatamedha,'' jedhan.
+
+> **Barnoonni** akka jedhanitti, namoota mana mareettis miidhaan qaqqabu akka hin uumamne. / Garuu kan
+> isaan irratti bobba'an yoo tahu, isaan keessaa tokko.
+
+**Findings**
+- **The output is Oromo, not yet meaning.** Words, the hudhaa (*ta'an*, *bobba'an*), quoting style
+  (*''…'' jedhan*) and news-report phrasing are right. The model has absorbed the style of its
+  mostly-news training data: names of officials, *jedhan* ("they said"). Sentences are locally
+  fluent but don't add up to a coherent story. That's expected at 23M parameters and 11M tokens.
+- **Greedy decoding loops.** At temperature 0 the model repeats itself
+  (*"Afaan Oromoo, Afaan Oromoo, …"*). Temperature and top-k sampling, from chapter 5 of the book,
+  fix this; 0.7 works best here.
+- **No overfitting, so more data is the bottleneck.** Validation loss fell at every checkpoint, and
+  the train/validation gap stayed small (0.23). More Oromo text, or a larger model with more data,
+  should keep improving it.
 
 ## Project layout
 
@@ -119,7 +161,7 @@ python scripts/07_pretrain.py
 python scripts/08_evaluate.py
 ```
 
-Steps 1–6 take a few minutes. Pretraining takes about 40 minutes on an M1 Max; it also runs on
+Steps 1–6 take a few minutes. Pretraining takes about 42 minutes on an M1 Max; it also runs on
 CUDA or on CPU (slowly).
 
 ## Changes from the book's code
