@@ -15,7 +15,7 @@ sized for the amount of Oromo text that actually exists.
 | 1 | Collect, clean and deduplicate an Oromo corpus | 2 | ✅ Done |
 | 2 | Train an Oromo tokenizer (byte-level BPE) | 2 | ✅ Done |
 | 3 | Implement GPT and pretrain it on Oromo | 3, 4, 5 | ✅ Done |
-| 4 | Fine-tune for classification (sentiment / news topics) | 6 | Planned |
+| 4 | Fine-tune for classification (news topics) | 6 | ✅ Done |
 | 5 | Instruction fine-tuning on Oromo instruction–response pairs | 7 | Planned |
 | 6 | Adapt a multilingual open model (continued pretraining + LoRA) and compare | App. E | Planned |
 
@@ -123,6 +123,54 @@ learned about context.
   the train/validation gap stayed small (0.23). More Oromo text, or a larger model with more data,
   should keep improving it.
 
+### Phase 4: news-topic classification
+
+**Task:** [MasakhaNEWS](https://huggingface.co/datasets/masakhane/masakhanews) Oromo. Classify a BBC
+Afaan Oromoo article into one of 5 topics: politics, health, sports, entertainment, technology.
+There are 1,128 training, 162 dev and 325 test articles, and the topics are unbalanced (technology
+has only 50 training articles). So **macro-F1**, which weights every topic equally, is reported
+alongside accuracy.
+
+**Method:** following chapter 6 of the book, the 16k-word output layer is replaced by a 5-class
+head, and the class is read from the model's output at the last token. Each GPT setup tries
+3 learning rates, keeps the epoch with the best dev score (up to 10 epochs), and reruns the best
+learning rate with 3 seeds. Test results are mean ± standard deviation over those seeds.
+
+| Setup | Trained params | Test accuracy | Test macro-F1 |
+|---|---:|---:|---:|
+| Majority class | – | 30.8% | 0.094 |
+| TF-IDF + logistic regression | – | 86.8% | 0.749 |
+| Our GPT, **random init**, all layers | 16.9M | 73.1% ± 3.1 | 0.558 ± 0.022 |
+| Our GPT, **pretrained**, book recipe (last block + norm + head) | 1.8M | 81.0% ± 0.4 | 0.672 ± 0.033 |
+| Our GPT, **pretrained**, all layers | 16.9M | **87.2% ± 0.9** | **0.779 ± 0.015** |
+
+F1 per topic (mean over seeds):
+
+| Topic (training articles) | TF-IDF | GPT random init | GPT pretrained, all layers |
+|---|---:|---:|---:|
+| sports (280) | 0.98 | 0.90 | 0.93 |
+| health (338) | 0.88 | 0.80 | 0.91 |
+| politics (350) | 0.87 | 0.76 | 0.90 |
+| entertainment (110) | 0.60 | 0.23 | 0.58 |
+| technology (50) | 0.42 | 0.11 | **0.58** |
+
+**Findings**
+- **Pretraining is what makes it work.** The same architecture trained only on the 1,128 labeled
+  articles reaches macro-F1 0.56. Starting from the Phase 3 weights raises it to 0.78
+  (+0.22 macro-F1, +14 accuracy points). The gain is largest on the rare topics: technology goes
+  from 0.11 to 0.58, because the pretrained model already knows Oromo words it sees only a few
+  times in the labeled data.
+- **The fully fine-tuned GPT slightly beats a strong classic baseline.** Accuracy is level with
+  TF-IDF (87.2% vs 86.8%, inside the seed noise). Macro-F1 is higher (0.779 vs 0.749), almost all
+  from technology. TF-IDF is still better on sports, where keywords like team names decide the topic.
+- **The book's recipe is a good trade-off.** Training only the last block, the final norm and the
+  head (1.8M parameters, a tenth of the model) recovers most of the gain over random init.
+  Training all layers adds another 0.11 macro-F1.
+- **Contamination was checked.** The articles and much of the pretraining text both come from
+  BBC Afaan Oromoo, so `scripts/09_prepare_news.py` measures 13-word overlap (the GPT-3 paper's
+  method). Only 1 of 325 test articles appears mostly in the pretraining text (on average, 5.5% of
+  an article's 13-grams do). Scores without that article are unchanged to three decimals.
+
 ## Project layout
 
 ```
@@ -132,6 +180,8 @@ oromo_llm/
   model.py       the book's GPT: multi-head attention, LayerNorm, GELU, transformer blocks
   generate.py    greedy, temperature and top-k generation
   train.py       the book's loss functions and training loop + warmup, cosine decay, clipping
+  classify.py    the book's classification fine-tuning (chapter 6) + macro-F1
+  text.py        Oromo text normalization (hudhaa, quotes, site labels)
 scripts/
   01_download.py            raw data from Hugging Face
   02_build_corpus.py        cleaning, deduplication, train/val split
@@ -141,6 +191,8 @@ scripts/
   06_encode_corpus.py       corpus -> uint16 token files
   07_pretrain.py            pretraining
   08_evaluate.py            loss, perplexity, bits/char, baseline, samples
+  09_prepare_news.py        MasakhaNEWS Oromo + contamination check
+  10_finetune_news.py       topic classification: baselines vs fine-tuned GPTs
 tests/                      tokenizer, data loader and model checks
 tokenizer/oromo-bpe.json    the chosen 16k tokenizer
 ```
@@ -159,10 +211,12 @@ python scripts/06_encode_corpus.py
 python -m pytest tests -q
 python scripts/07_pretrain.py
 python scripts/08_evaluate.py
+python scripts/09_prepare_news.py
+python scripts/10_finetune_news.py --epochs 10
 ```
 
-Steps 1–6 take a few minutes. Pretraining takes about 42 minutes on an M1 Max; it also runs on
-CUDA or on CPU (slowly).
+Steps 1–6 take a few minutes. On an M1 Max, pretraining takes about 42 minutes and the
+classification experiments about 30 minutes. Both also run on CUDA, or slowly on CPU.
 
 ## Changes from the book's code
 
@@ -183,4 +237,6 @@ CUDA or on CPU (slowly).
 - **Data (not stored in this repository; downloaded by the scripts):**
   - AfriBERTa corpus (Apache-2.0), by Ogueji, Zhu and Lin, *Small Data? No Problem!* (2021).
   - Oromo Wikipedia (CC BY-SA 4.0).
+  - MasakhaNEWS (AFL-3.0), by Adelani et al., *MasakhaNEWS: News Topic Classification for African
+    Languages* (2023).
 - This repository is licensed under Apache-2.0.
