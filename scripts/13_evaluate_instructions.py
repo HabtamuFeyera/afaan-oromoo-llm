@@ -10,11 +10,12 @@ instruction-tuned one, plus simple baselines, on each task:
             were never seen in pretraining, so this measures how much the model
             makes up; the answers are saved for a native speaker to judge.
 
-All answers are written to checkpoints/oromo-gpt-23m-instruct/test_responses.json
+All answers are written to checkpoints/<base>-instruct/test_responses.json
 (book section 7.7) so a native speaker can review them.
-Usage: python scripts/13_evaluate_instructions.py
+Usage: python scripts/13_evaluate_instructions.py [--base oromo-gpt-23m-v2]
 """
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -28,9 +29,6 @@ from oromo_llm.metrics import evaluate, rouge_l  # noqa: E402
 from oromo_llm.model import GPTModel  # noqa: E402
 from oromo_llm.train import get_device  # noqa: E402
 
-RUN = ROOT / "checkpoints" / "oromo-gpt-23m-instruct"
-
-
 def load(path, device):
     ckpt = torch.load(path, map_location=device)
     model = GPTModel(ckpt["config"]).to(device)
@@ -39,10 +37,14 @@ def load(path, device):
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--base", default="oromo-gpt-23m", help="pretraining run under checkpoints/")
+    base = ap.parse_args().base
+    RUN = ROOT / "checkpoints" / f"{base}-instruct"
     device = get_device()
     entries = load_entries(ROOT / "data" / "instructions" / "test.json")
     models = {
-        "pretrained (no instruction tuning)": ROOT / "checkpoints" / "oromo-gpt-23m" / "best.pt",
+        "pretrained (no instruction tuning)": ROOT / "checkpoints" / base / "best.pt",
         "instruction-tuned": RUN / "best.pt",
     }
     results, all_responses = {}, {}

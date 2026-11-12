@@ -1,12 +1,12 @@
 """Phase 5, step 2: instruction fine-tune the pretrained Oromo GPT (book chapter 7).
 
-Starts from checkpoints/oromo-gpt-23m/best.pt and trains all layers on
+Starts from checkpoints/<base>/best.pt (default oromo-gpt-23m) and trains all layers on
 data/instructions/train.json with AdamW and the chapter 5 loss. Padding and
 prompt tokens are masked out. Each learning rate runs for a fixed number of
 epochs; the epoch and rate with the lowest validation loss are kept.
 
-Outputs: checkpoints/oromo-gpt-23m-instruct/{best.pt, log.json}
-Usage: python scripts/12_instruction_finetune.py [--epochs 5] [--lrs 5e-5 2e-4]
+Outputs: checkpoints/<base>-instruct/{best.pt, log.json}
+Usage: python scripts/12_instruction_finetune.py [--epochs 5] [--lrs 5e-5 2e-4] [--base oromo-gpt-23m-v2]
 """
 
 import argparse
@@ -27,8 +27,6 @@ from oromo_llm.model import GPTModel  # noqa: E402
 from oromo_llm.train import calc_loss_batch, calc_loss_loader, get_device  # noqa: E402
 
 DATA = ROOT / "data" / "instructions"
-PRETRAINED = ROOT / "checkpoints" / "oromo-gpt-23m" / "best.pt"
-OUT = ROOT / "checkpoints" / "oromo-gpt-23m-instruct"
 
 
 def main():
@@ -37,7 +35,10 @@ def main():
     ap.add_argument("--lrs", type=float, nargs="+", default=[5e-5, 2e-4])
     ap.add_argument("--batch-size", type=int, default=8)
     ap.add_argument("--seed", type=int, default=123)
+    ap.add_argument("--base", default="oromo-gpt-23m", help="pretraining run under checkpoints/")
     args = ap.parse_args()
+    PRETRAINED = ROOT / "checkpoints" / args.base / "best.pt"
+    OUT = ROOT / "checkpoints" / f"{args.base}-instruct"
 
     device = get_device()
     ckpt = torch.load(PRETRAINED, map_location="cpu")

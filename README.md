@@ -192,7 +192,7 @@ held-out text:
     that set easier than truly new text.
   - Validation loss was still falling at the end of training, so more data and longer training
     remain the main levers.
-- Phases 4 and 5 above use the original `oromo-gpt-23m`.
+- Phases 4 and 5 below use the original `oromo-gpt-23m`; each also has a rerun from v2.
 
 #### v2: all the data
 
@@ -269,6 +269,25 @@ F1 per topic (mean over seeds):
   headlines the conclusions hold (Phase 6 model ROUGE-L 0.255 vs 0.218 for the first-10-words
   baseline). From v2 on, the corpus builder removes every line that contains a dev/test headline.
 
+#### Starting from the v2 model
+
+The same experiment from `oromo-gpt-23m-v2` (`python scripts/10_finetune_news.py --epochs 10
+--base oromo-gpt-23m-v2`), with identical settings, splits and seeds:
+
+| Setup | v1 base: accuracy | v1 base: macro-F1 | v2 base: accuracy | v2 base: macro-F1 |
+|---|---:|---:|---:|---:|
+| TF-IDF + logistic regression | 86.8% | 0.749 | 86.8% | 0.749 |
+| Random init, all layers (no pretraining) | 73.1% ± 3.1 | 0.558 ± 0.022 | 74.1% ± 0.4 | 0.577 ± 0.045 |
+| Pretrained, book recipe (last block + norm + head) | 81.0% ± 0.4 | 0.672 ± 0.033 | **86.1% ± 0.8** | **0.753 ± 0.015** |
+| Pretrained, all layers | 87.2% ± 0.9 | 0.779 ± 0.015 | **87.8% ± 0.9** | **0.809 ± 0.035** |
+
+- **The book's recipe gains the most** (+5.1 accuracy points, +0.08 macro-F1). With most of the
+  model frozen, the result depends directly on the pretrained features, and v2's are better.
+  Training only 1.8M parameters now matches TF-IDF.
+- **All layers: v2 is the best model in the table**, mostly from the rare topics (technology F1
+  0.58 → 0.67, entertainment 0.58 → 0.63). The gain over v1 is within the seed spread.
+- The random-init rows agree, as they should: they don't use pretraining.
+
 ### Phase 5: instruction fine-tuning
 
 **Data:** there is no Oromo instruction dataset, and translating the book's English one would
@@ -321,6 +340,30 @@ pretraining.
   instruction-tuning a larger, multilingual open model on the same data.
 - The instruction templates were written for this project and should be reviewed by a native
   Oromo speaker.
+
+#### Starting from the v2 model
+
+The same data and settings, starting from `oromo-gpt-23m-v2` instead of the Phase 3 model
+(`python scripts/12_instruction_finetune.py --base oromo-gpt-23m-v2`, then `13_…` with the same flag).
+The best checkpoint is again 5e-5 after 2 epochs, with a validation loss of **3.65 instead of 4.05**.
+
+| Task | Metric | v1 base | v2 base |
+|---|---|---:|---:|
+| topic | answers that are a valid topic word | 100% | 71% |
+| topic | accuracy / macro-F1 | 50.5% / 0.29 | 38.2% / **0.41** |
+| headline | ROUGE-L with the real headline | 0.025 | **0.063** |
+| headline | generated headlines that mention Covid | 240 of 325 | **110 of 325** |
+| describe | ROUGE-L with the Wikipedia sentence | 0.079 | 0.084 |
+
+- **The answers depend more on the input.** v1 answered almost only *fayyaa* or *ispoortii*, which
+  gets 50% accuracy by matching the two largest topics. v2 uses all five: politics goes from 4 to
+  39 correct out of 100, and technology from 0 to 8 out of 15, so macro-F1 rises by 40%.
+- **But it confuses the tasks.** 29% of topic answers are a headline (*"Koronaavaayiras: …"*)
+  instead of a topic word, which counts as wrong.
+- **Headlines improve 2.5×**, with half as many Covid headlines and 295 different headlines out of
+  325. The v2 corpus contains none of the test headlines, so this score is clean.
+- Better pretraining helps, but the 23M model still falls far short of the first-10-words baseline
+  (0.212) and of the 0.8B model in Phase 6. Model size is the main limit for this stage.
 
 ### Phase 6: open multilingual models
 
@@ -430,7 +473,9 @@ python scripts/13_evaluate_instructions.py
 To include Telegram channels, put Telegram Desktop exports under `data/raw/telegram/<channel>/`,
 then run `scripts/14_import_telegram.py` (after `09_prepare_news.py`, which it uses for the overlap
 check) and rerun `02`, `03` and `06`. Without exports, the pipeline skips Telegram.
-The Phase 3–5 results above were produced before the Telegram data was added.
+The main Phase 3–5 results above were produced before the Telegram data was added. To fine-tune
+another pretraining run, pass `--base <run>` to scripts `10`, `12` and `13`; results go to separate
+folders (`news-classifier-v2/`, `<run>-instruct/`).
 
 Steps 1–6 take a few minutes. On an M1 Max, pretraining takes about 42 minutes and the
 classification experiments about 30 minutes. Both also run on CUDA, or slowly on CPU.

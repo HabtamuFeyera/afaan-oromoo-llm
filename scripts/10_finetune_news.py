@@ -13,7 +13,8 @@ standard deviation over seeds, on the full test set and on the test set without
 articles the pretraining text already contained (see 09_prepare_news.py).
 
 Outputs: checkpoints/news-classifier/results.json and best_classifier.pt
-Usage: python scripts/10_finetune_news.py [--quick]
+         (news-classifier-<suffix>/ for another base, e.g. news-classifier-v2/)
+Usage: python scripts/10_finetune_news.py [--quick] [--base oromo-gpt-23m-v2]
 """
 
 import argparse
@@ -34,8 +35,7 @@ from oromo_llm.classify import build_classifier, make_loader, predict, scores, t
 from oromo_llm.train import get_device  # noqa: E402
 
 NEWS = ROOT / "data" / "news"
-OUT = ROOT / "checkpoints" / "news-classifier"
-PRETRAINED = ROOT / "checkpoints" / "oromo-gpt-23m" / "best.pt"
+DEFAULT_BASE = "oromo-gpt-23m"
 
 
 def read_jsonl(split):
@@ -64,7 +64,11 @@ def main():
     ap.add_argument("--lrs", type=float, nargs="+", default=[5e-5, 2e-4, 5e-4])
     ap.add_argument("--seeds", type=int, nargs="+", default=[1, 2, 3])
     ap.add_argument("--quick", action="store_true", help="1 epoch, 1 lr, 1 seed (smoke test)")
+    ap.add_argument("--base", default=DEFAULT_BASE, help="pretraining run under checkpoints/")
     args = ap.parse_args()
+    suffix = "" if args.base == DEFAULT_BASE else "-" + args.base.removeprefix(DEFAULT_BASE + "-")
+    OUT = ROOT / "checkpoints" / f"news-classifier{suffix}"
+    PRETRAINED = ROOT / "checkpoints" / args.base / "best.pt"
     if args.quick:
         args.epochs, args.lrs, args.seeds = 1, args.lrs[:1], args.seeds[:1]
 
@@ -150,7 +154,7 @@ def main():
 
     results["best_dev_setup"] = overall_best[1]
     (OUT / "results.json").write_text(json.dumps(results, indent=2))
-    print("\nsaved checkpoints/news-classifier/results.json", flush=True)
+    print(f"\nsaved {(OUT / 'results.json').relative_to(ROOT)}", flush=True)
 
 
 if __name__ == "__main__":
