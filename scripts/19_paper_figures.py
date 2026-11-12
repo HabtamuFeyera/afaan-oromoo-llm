@@ -1,7 +1,7 @@
 """Draw the paper's figures as vector PDFs from the saved result files.
 
-- figures/val_loss.pdf      validation loss by step, both pretraining runs (checkpoints/*/log.jsonl)
-- figures/topic_f1.pdf      MasakhaNEWS test macro-F1 of five systems (checkpoints/news-classifier/results.json)
+- figures/val_loss.pdf      validation loss by step for the three corpus sizes (checkpoints/*/log.jsonl)
+- figures/topic_f1.pdf      MasakhaNEWS test macro-F1 of five systems (checkpoints/news-classifier-v2/results.json)
 - figures/open_models.pdf   bits per character of open models (checkpoints/oromo_skill.json)
 
 Style: grey data with one blue accent on the paper's own model, thin marks,
@@ -10,6 +10,7 @@ Usage: python scripts/19_paper_figures.py
 """
 
 import json
+from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 import matplotlib
@@ -36,16 +37,23 @@ plt.rcParams.update({
 })
 
 
+def r2(x):
+    """Round half up to 2 decimals, as in the paper text (1.535 -> 1.54, not 1.53)."""
+    return str(Decimal(str(x)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+
+
 def val_loss():
     fig, ax = plt.subplots(figsize=(WIDTH, 2.0))
-    runs = [("oromo-gpt-23m", "Without Telegram", GREY, 1.6), ("oromo-gpt-23m-tg", "With Telegram", ACCENT, 1.8)]
+    runs = [("oromo-gpt-23m", "Public text, 6.9M words", "#d6d4cb", 1.4),
+            ("oromo-gpt-23m-tg", "+ 4 channels, 8.1M", GREY, 1.4),
+            ("oromo-gpt-23m-v2", "+ 19 channels, 12.8M (ours)", ACCENT, 1.8)]
     for run, label, color, lw in runs:
         rows = [json.loads(l) for l in (CK / run / "log.jsonl").read_text().splitlines()]
         steps, loss = [r["step"] for r in rows], [r["val_loss"] for r in rows]
-        ax.plot(steps, loss, color=color, lw=lw, label=f"{label}: {loss[-1]:.2f} after {steps[-1]:,} steps")
-    ax.axhline(8.054, color=INK2, lw=0.8, ls=(0, (3, 3)))
-    ax.text(6400, 8.054 - 0.08, "Unigram baseline 8.05", ha="right", va="top", color=INK2, fontsize=6.5)
-    ax.set_xlim(0, 6500)
+        ax.plot(steps, loss, color=color, lw=lw, label=f"{label}: {loss[-1]:.2f}")
+    ax.axhline(8.138, color=INK2, lw=0.8, ls=(0, (3, 3)))
+    ax.text(10400, 8.138 - 0.08, "Unigram baseline 8.14", ha="right", va="top", color=INK2, fontsize=6.5)
+    ax.set_xlim(0, 10600)
     ax.set_ylim(4.7, 8.4)
     ax.set_xlabel("Training step")
     ax.set_ylabel("Validation loss (nats/token)")
@@ -55,7 +63,7 @@ def val_loss():
 
 
 def topic_f1():
-    res = json.loads((CK / "news-classifier" / "results.json").read_text())["setups"]
+    res = json.loads((CK / "news-classifier-v2" / "results.json").read_text())["setups"]
     systems = [
         ("majority", "Majority class"),
         ("random_init_all", "GPT, random init"),
@@ -90,8 +98,8 @@ def open_models():
     res = json.loads((CK / "oromo_skill.json").read_text())
     models = [
         ("McGill-NLP/AfriqueQwen3.5-0.8B-50Langs", "AfriqueQwen3.5-0.8B"),
-        ("oromo-gpt-23m-tg (ours)", "Ours, 23M"),
-        ("checkpoints/qwen3-0.6b-oromo-lora/merged", "Qwen3-0.6B + our LoRA"),
+        ("oromo-gpt-23m-v2 (ours)", "Ours, 23M"),
+        ("checkpoints/qwen3-0.6b-oromo-lora-v2/merged", "Qwen3-0.6B + our LoRA"),
         ("Qwen/Qwen3.5-0.8B-Base", "Qwen3.5-0.8B-Base"),
         ("Qwen/Qwen3-0.6B-Base", "Qwen3-0.6B-Base"),
     ]
@@ -103,9 +111,9 @@ def open_models():
         unseen, val = r["telegram_2026"]["bits_per_char"], r["val"]["bits_per_char"]
         ax.barh(y, unseen, height=0.62, color=ACCENT if ours else GREY)
         ax.plot([val, val], [y - 0.38, y + 0.38], color=INK, lw=1.2)
-        ax.text(unseen - 0.05, y, f"{unseen:.2f}", va="center", ha="right", color="white" if ours else INK,
+        ax.text(unseen - 0.05, y, r2(unseen), va="center", ha="right", color="white" if ours else INK,
                 fontweight="bold" if ours else "normal", fontsize=6.5)
-        ax.text(val + 0.06, y, f"val {val:.2f}", va="center", color=INK2, fontsize=6)
+        ax.text(max(val, unseen) + 0.06, y, f"val {r2(val)}", va="center", color=INK2, fontsize=6)
     ax.set_yticks(range(len(models)), [m[1] for m in reversed(models)])
     ax.set_xlim(0, 3.6)
     ax.set_xlabel("Bits per character (lower is better)")

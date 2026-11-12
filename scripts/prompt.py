@@ -1,10 +1,12 @@
 """Type prompts to one of our trained Oromo models.
 
 Models
-  base      oromo-gpt-23m       the first pretrained model (Phase 3)
-  base-tg   oromo-gpt-23m-tg    retrained with the Telegram data (default)
-  instruct  oromo-gpt-23m-instruct   instruction-tuned (Phase 5)
-  afrique   AfriqueQwen3.5-0.8B + our LoRA instruction tuning (Phase 6, the best model)
+  v2           oromo-gpt-23m-v2           the paper's model: all data, 19 Telegram channels (default)
+  instruct-v2  oromo-gpt-23m-v2-instruct  v2, instruction-tuned
+  base         oromo-gpt-23m              the first pretrained model, public text only (Phase 3)
+  base-tg      oromo-gpt-23m-tg           public text + 4 Telegram channels
+  instruct     oromo-gpt-23m-instruct     the first model, instruction-tuned (Phase 5)
+  afrique      AfriqueQwen3.5-0.8B + our LoRA instruction tuning (Phase 6, the best instruction follower)
 
 The base models continue whatever text you start. The instruct models take an
 instruction; to give them an input text too, write: instruction ||| input text
@@ -12,7 +14,7 @@ instruction; to give them an input text too, write: instruction ||| input text
 Commands at the prompt: :t 0.8 (temperature, 0 = greedy), :k 40 (top-k),
 :n 80 (max new tokens), :q (quit)
 
-Usage: python scripts/prompt.py [base|base-tg|instruct|afrique]
+Usage: python scripts/prompt.py [v2|instruct-v2|base|base-tg|instruct|afrique]
 The 23M models run on the CPU; "afrique" uses the Mac GPU and takes a few
 seconds per answer.
 """
@@ -30,7 +32,8 @@ from oromo_llm.instruct import respond  # noqa: E402
 from oromo_llm.model import GPTModel  # noqa: E402
 from oromo_llm.tokenizer import get_tokenizer  # noqa: E402
 
-RUNS = {"base": "oromo-gpt-23m", "base-tg": "oromo-gpt-23m-tg", "instruct": "oromo-gpt-23m-instruct",
+RUNS = {"v2": "oromo-gpt-23m-v2", "instruct-v2": "oromo-gpt-23m-v2-instruct",
+        "base": "oromo-gpt-23m", "base-tg": "oromo-gpt-23m-tg", "instruct": "oromo-gpt-23m-instruct",
         "afrique": "afrique-0.8b-instruct-lora"}
 EXAMPLE = ("Oduun armaan gadii waa'ee maalii? Tokko filadhu: siyaasa, fayyaa, ispoortii, "
            "bashannanaa, teeknooloojii. ||| Atileetonni Oromoo maaraatoonii injifatan.")
@@ -66,7 +69,7 @@ class AfriqueModel:
 
 
 def main():
-    name = sys.argv[1] if len(sys.argv) > 1 else "base-tg"
+    name = sys.argv[1] if len(sys.argv) > 1 else "v2"
     if name not in RUNS:
         sys.exit(f"choose one of: {', '.join(RUNS)}")
 
@@ -89,7 +92,7 @@ def main():
 
     if name == "afrique":
         pass
-    elif name == "instruct":
+    elif name.startswith("instruct"):
         print("Type an instruction. To add an input text: instruction ||| input text")
         print(f"Example: {EXAMPLE}")
     else:
@@ -122,7 +125,7 @@ def main():
             instruction, _, text = (part.strip() for part in line.partition("|||"))
             entry = {"task": "", "instruction": instruction, "input": text}
             print(f"\n{afrique.answer(entry, max_new, temperature, top_k)}\n")
-        elif name == "instruct":
+        elif name.startswith("instruct"):
             instruction, _, text = (part.strip() for part in line.partition("|||"))
             entry = {"task": "", "instruction": instruction, "input": text}
             answer = respond(model, entry, "cpu", max_new_tokens=max_new,

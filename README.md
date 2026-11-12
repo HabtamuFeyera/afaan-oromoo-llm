@@ -8,6 +8,20 @@ and adapts it to a low-resource language. The book trains on English with GPT-2'
 stage is rebuilt around Oromo: the data, a tokenizer that understands the hudhaa (`'`), and a model
 sized for the amount of Oromo text that actually exists.
 
+**The paper's model is `oromo-gpt-23m-v2`:** 23M parameters, trained in 77 minutes on a laptop on
+12.76M words (public AfriBERTa and Wikipedia text plus 19 Telegram news channels), with every
+evaluation headline and article filtered out of the training text.
+
+| | Result |
+|---|---|
+| Tokenizer | 4.98 characters per token on Oromo, against 2.34 for GPT-2 |
+| Language modeling | 1.50 bits per character on held-out text (a general 752M model: 2.88) |
+| Topic classification (MasakhaNEWS) | 87.8% accuracy, macro-F1 0.809 (TF-IDF: 0.749) |
+| Instruction tuning | learns the format, but 23M is too small to follow instructions reliably; an Oromo-adapted 0.8B model with LoRA on the same data reaches 91.1% topic accuracy |
+
+The sections below follow the project in order, so they start with the first, smaller corpus
+(v1) and add the v2 results as each phase was rerun.
+
 ## Roadmap
 
 | Phase | What | Book chapters | Status |
@@ -78,7 +92,9 @@ signature lines, topics, overlap with the corpus and with evaluation text, and h
 
 **Result:**
 - First import: training text grew from 6.91M to 8.07M words (11.07M → 12.97M tokens).
-- **v2: training text is 12.90M words (21.45M tokens)**, almost twice the original corpus.
+- **v2: training text is 12.76M words (21.45M tokens)**, almost twice the original corpus:
+  AfriBERTa 6.52M, Wikipedia 0.36M, Telegram 5.87M. (Earlier word counts here included the
+  document separators; the true counts are 6.90M for public text and 8.05M with 4 channels.)
 - 5% of posts (by hash) are held out as `val_telegram.txt` (323k words in v2). The first import's
   held-out posts are kept as `val_telegram_v1.txt`, so every run is compared on the same text.
 - The Phase 3 model, which never saw these posts, scores perplexity **217** on them, against 171
@@ -204,7 +220,7 @@ dev/test headline was removed from all training sources (see Phase 4).
 |---|---:|---:|---:|---:|---:|---:|---:|
 | `oromo-gpt-23m` | 6.91M | 171 | 1.536 | 217 | 1.516 | 217 | 1.550 |
 | `oromo-gpt-23m-tg` | 8.07M | 163 | 1.522 | 96 | 1.286 | 117 | 1.372 |
-| `oromo-gpt-23m-v2` | 12.90M | **150** | **1.496** | **64** | **1.173** | **38** | **1.047** |
+| `oromo-gpt-23m-v2` | 12.76M | **150** | **1.496** | **64** | **1.173** | **38** | **1.047** |
 
 - **The original validation set improves again** (perplexity 163 → 150). It is AfriBERTa and
   Wikipedia text that the new data does not resemble, so this is the cleanest sign that more data
@@ -383,6 +399,25 @@ published after AfriqueLLM's January 2026 release, so no model here can have see
   continues an Oromo prompt in Afrikaans). The same 752M model after African-language pretraining
   is best everywhere.
 - **Our own LoRA continued pretraining** of Qwen3-0.6B cut its bits per character by 43%.
+
+**Rerun with v2 (the paper's numbers).** The v2 import rebuilt the Telegram test files, so every
+model was scored again (`checkpoints/oromo_skill.json`; the table above is kept as
+`oromo_skill_v1.json`). "Telegram 2026" is now 658 held-out posts (277k characters), and the LoRA
+model was retrained on the v2 corpus (`qwen3-0.6b-oromo-lora-v2`, 49 min).
+
+| Model | Params | Validation | Telegram | Telegram 2026 |
+|---|---:|---:|---:|---:|
+| Qwen3-0.6B-Base (general) | 0.6B | 3.135 | 2.632 | 2.505 |
+| Qwen3.5-0.8B-Base (general) | 752M | 2.881 | 2.422 | 2.327 |
+| Our GPT, public text only (v1) | 23M | 1.527 | 1.425 | 1.955 |
+| Qwen3-0.6B + **our LoRA** on the v2 corpus | 0.6B | 1.829 | 1.355 | 1.506 |
+| **Our GPT v2** | 23M | 1.485 | 1.163 | 1.535 |
+| AfriqueQwen3.5-0.8B | 752M | **1.452** | **0.971** | **1.153** |
+
+- AfriqueQwen is best everywhere, most clearly on the 2026 posts. A quarter of those are live
+  sports commentary, which our corpus covers mainly through one channel.
+- Our LoRA-adapted Qwen3-0.6B slightly beats our 23M model on the 2026 posts, but not on the other
+  two sets.
 
 **Instruction tuning at 0.8B.** LoRA instruction tuning of AfriqueQwen3.5-0.8B on the Phase 5 data
 (one epoch, about an hour; `scripts/18_instruct_open_model.py`, full-test scoring by

@@ -49,7 +49,7 @@ def unigram_loss(train_ids, val_ids, vocab_size):
 
 
 def main():
-    ckpt_path = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "checkpoints" / "oromo-gpt-23m" / "best.pt"
+    ckpt_path = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else ROOT / "checkpoints" / "oromo-gpt-23m" / "best.pt"
     device = get_device()
     state = torch.load(ckpt_path, map_location=device)
     cfg = state["config"]
