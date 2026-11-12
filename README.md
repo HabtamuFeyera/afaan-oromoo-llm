@@ -439,9 +439,10 @@ training runs at 90–290 tokens/s. That's why our own continued pretraining use
 
 ## Paper
 
-[`paper/`](paper) holds the arXiv version: 8 pages in ACL style. Rebuild the PDF and the upload
-archive with `sh paper/build.sh` (needs `brew install tectonic`), and see
-[`paper/ARXIV_SUBMISSION.md`](paper/ARXIV_SUBMISSION.md) for the submission steps.
+[`paper/`](paper) holds the paper: 8 pages in ACL style. Rebuild the PDF and the upload
+archive with `sh paper/build.sh` (needs `brew install tectonic`). The preprint is published through
+Zenodo's AfricArXiv community ([`paper/ZENODO_SUBMISSION.md`](paper/ZENODO_SUBMISSION.md));
+[`paper/ARXIV_SUBMISSION.md`](paper/ARXIV_SUBMISSION.md) has the arXiv steps for later.
 
 ## Project layout
 

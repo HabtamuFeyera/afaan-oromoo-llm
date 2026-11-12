@@ -2,8 +2,11 @@
 
 Build the PDF and the upload archive with `sh paper/build.sh` (needs Tectonic: `brew install tectonic`).
 
+No endorser yet, so the preprint goes to Zenodo first (see `ZENODO_SUBMISSION.md`); arXiv can follow
+if an endorser is found.
+
 ## Status (November 10, 2026)
-- [x] arXiv account created and verified (username `HabtamuFeyera97`, default category cs.CL).
+- [x] arXiv account created and verified (default category cs.CL).
 - [x] Submission started; license CC BY 4.0, category cs.CL.
 - [ ] **Endorsement for cs.CL.** Forward arXiv's endorsement email (it holds your code) to a qualified endorser
   (3+ arXiv cs papers between 3 months and 5 years ago; check with "Which of the authors of this article
