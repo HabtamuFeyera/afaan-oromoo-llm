@@ -48,3 +48,14 @@ def test_macro_f1():
     s = scores([0, 0, 1, 2], [0, 1, 1, 2], 3)
     assert s["accuracy"] == 0.75
     assert abs(s["macro_f1"] - (2 / 3 + 2 / 3 + 1) / 3) < 1e-9
+
+
+def test_headline_filter_finds_test_headline_inside_text():
+    import json
+    from pathlib import Path
+    from oromo_llm.contamination import HeadlineFilter
+    f = HeadlineFilter()
+    row = json.loads(Path("data/news/test.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    head = row["text"].split("\n")[0]
+    assert f.contains_headline(f"Oduu har'aa: {head.upper()} - BBC")
+    assert not f.contains_headline("Akkam jirta? Nagaan jira, galatoomi.")

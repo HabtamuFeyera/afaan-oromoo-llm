@@ -47,25 +47,40 @@ Public Afaan Oromoo Telegram channels, exported with Telegram Desktop ("Export c
 are imported by `scripts/14_import_telegram.py`. The posts are copyrighted by their channels, so
 they stay in the git-ignored `data/` folder; only the importer is published.
 
-| Channel | Posts with text | Period | Words kept |
-|---|---:|---|---:|
-| OBN (Oromia Broadcasting Network) | 6,303 | Oct 2021 – Nov 2022 | 826k |
-| TIKVAH Afaan Oromoo | 4,652 | Jun 2019 – Nov 2026 | 434k |
-| Jawar Mohammed | 1,353 | Jan – Aug 2025 | 97k |
-| Oromia Times | 365 | Sep 2020 – Aug 2024 | 16k |
+The first import used 4 channels (OBN, TIKVAH Afaan Oromoo, Jawar Mohammed, Oromia Times; 1.16M
+words). The second (v2) uses 19 channels, about 6.66M words before line filtering. The largest:
+
+| Channel | Posts with text | Words kept |
+|---|---:|---:|
+| FMC Afaan Oromoo | 42,598 | 2.64M |
+| OBN (Oromia Broadcasting Network) | 6,303 | 0.83M |
+| Burqaa Ispoortii (sports) | 115,594 | 0.75M |
+| TIKVAH Afaan Oromoo | 4,652 | 0.43M |
+| BBC Afaan Oromoo | 23,949 | 0.43M |
+| Jawar Mohammed | 4,866 | 0.40M |
+| Addis Standard Afaan Oromoo | 4,485 | 0.39M |
+| 12 smaller channels | 12,556 | 0.79M |
+
+`scripts/21_analyze_telegram.py` profiles each channel before import: Oromo vs other languages,
+signature lines, topics, overlap with the corpus and with evaluation text, and how much of it is new.
 
 **What the importer does:**
 - Strips hashtags, @handles, emojis and links.
 - Removes "signature" lines that appear in 3+ posts of a channel. For OBN that's 58,612 lines of
   social-media link blocks, sign-offs and reporter bylines.
 - **Drops any post that shares a 13-word sequence with evaluation text** (the validation set and
-  the MasakhaNEWS dev/test articles). 15 posts were dropped this way.
+  the MasakhaNEWS dev/test articles), **or that contains a MasakhaNEWS dev/test headline**
+  (`oromo_llm/contamination.py`). 338 posts were dropped this way, 307 of them from BBC.
+- Folds styled Unicode letters (𝐒𝐇𝐀𝐑𝐄 → SHARE) with NFKC, and keeps one export per channel when a
+  channel was exported twice.
 - The corpus builder then applies the usual line filters and deduplication. Telegram is processed
-  last, so `val.txt` is byte-identical and the earlier `train.txt` is an exact prefix of the new one.
+  last, so `val.txt` stays byte-identical across all versions.
 
 **Result:**
-- **Training text grows from 6.91M to 8.07M words** (11.07M → 12.97M tokens, +17%).
-- 5% of posts are held out as `val_telegram.txt` (65k words).
+- First import: training text grew from 6.91M to 8.07M words (11.07M → 12.97M tokens).
+- **v2: training text is 12.90M words (21.45M tokens)**, almost twice the original corpus.
+- 5% of posts (by hash) are held out as `val_telegram.txt` (323k words in v2). The first import's
+  held-out posts are kept as `val_telegram_v1.txt`, so every run is compared on the same text.
 - The Phase 3 model, which never saw these posts, scores perplexity **217** on them, against 171
   on its usual validation set. The channels cover 2019–2026, newer events than the rest of the
   corpus.
@@ -179,6 +194,27 @@ held-out text:
     remain the main levers.
 - Phases 4 and 5 above use the original `oromo-gpt-23m`.
 
+#### v2: all the data
+
+Same model, tokenizer and settings, trained on the v2 corpus (21.45M tokens, 4 passes, 10,472
+steps, 77 minutes at about 20k tokens/s). Before building it, every line containing a MasakhaNEWS
+dev/test headline was removed from all training sources (see Phase 4).
+
+| Model | Training words | Original val: ppl | bits/char | Telegram val v1: ppl | bits/char | Telegram val v2: ppl | bits/char |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `oromo-gpt-23m` | 6.91M | 171 | 1.536 | 217 | 1.516 | 217 | 1.550 |
+| `oromo-gpt-23m-tg` | 8.07M | 163 | 1.522 | 96 | 1.286 | 117 | 1.372 |
+| `oromo-gpt-23m-v2` | 12.90M | **150** | **1.496** | **64** | **1.173** | **38** | **1.047** |
+
+- **The original validation set improves again** (perplexity 163 → 150). It is AfriBERTa and
+  Wikipedia text that the new data does not resemble, so this is the cleanest sign that more data
+  helps the model in general.
+- **No validation line appears in the v2 training text**, checked for all three sets.
+- The Telegram scores are flattered by the same caveat as above: channels repost the same stories
+  in slightly different words, so the held-out posts are close to training posts.
+- At 23M parameters, samples are fluent in phrasing but still repeat themselves and lose the
+  thread after a sentence or two.
+
 ### Phase 4: news-topic classification
 
 **Task:** [MasakhaNEWS](https://huggingface.co/datasets/masakhane/masakhanews) Oromo. Classify a BBC
@@ -226,6 +262,12 @@ F1 per topic (mean over seeds):
   BBC Afaan Oromoo, so `scripts/09_prepare_news.py` measures 13-word overlap (the GPT-3 paper's
   method). Only 1 of 325 test articles appears mostly in the pretraining text (on average, 5.5% of
   an article's 13-grams do). Scores without that article are unchanged to three decimals.
+- **Headlines needed a separate check.** A headline is usually shorter than 13 words, so the n-gram
+  test misses it. Matching whole headlines found that **81 of the 325 test headlines appear in the
+  v1 pretraining text**, almost all through AfriBERTa. This doesn't affect topic classification
+  (the labels aren't in the text), but it matters for the Phase 5 headline task. On the 244 clean
+  headlines the conclusions hold (Phase 6 model ROUGE-L 0.255 vs 0.218 for the first-10-words
+  baseline). From v2 on, the corpus builder removes every line that contains a dev/test headline.
 
 ### Phase 5: instruction fine-tuning
 
@@ -335,6 +377,7 @@ oromo_llm/
   classify.py    the book's classification fine-tuning (chapter 6) + macro-F1
   instruct.py    the book's instruction fine-tuning (chapter 7): Oromo prompt format, masking
   text.py        Oromo text normalization (hudhaa, quotes, site labels)
+  contamination.py keeps evaluation headlines out of training text
 scripts/
   01_download.py            raw data from Hugging Face
   02_build_corpus.py        cleaning, deduplication, train/val split
@@ -356,6 +399,7 @@ scripts/
   18_instruct_open_model.py LoRA instruction tuning of an open model on the Phase 5 data
   19_paper_figures.py       the paper's figures, drawn from the saved results
   20_eval_open_model_full.py full-test evaluation of the tuned open model
+  21_analyze_telegram.py    per-channel profile of the Telegram exports
   prompt.py                 type prompts to the trained models
 paper/                      the arXiv paper (LaTeX, figures, build script)
 tests/                      tokenizer, data loader and model checks

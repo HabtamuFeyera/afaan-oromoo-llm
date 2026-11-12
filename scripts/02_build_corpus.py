@@ -32,6 +32,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+from oromo_llm.contamination import HeadlineFilter  # noqa: E402
 from oromo_llm.text import (  # noqa: E402
     ARABIC_RE, BOILERPLATE_RE, CYRILLIC_RE, DOT_LEADER_RE, ENGLISH_STOP, ETHIOPIC_RE, WORD_RE, normalize,
 )
@@ -79,10 +80,16 @@ class Builder:
         self.seen = set()
         self.stats = defaultdict(Counter)
         self.dropped = defaultdict(list)
+        # Training lines that contain a MasakhaNEWS dev/test headline are removed,
+        # so the topic and headline evaluations stay clean (oromo_llm/contamination.py).
+        news_ready = (ROOT / "data" / "news" / "test.jsonl").exists()
+        self.headlines = HeadlineFilter() if news_ready else None
 
     def clean_line(self, raw: str, source: str):
         line = normalize(raw)
         reason = reject_reason(line) if line else "empty"
+        if reason is None and self.headlines and "train" in source and self.headlines.contains_headline(line):
+            reason = "eval_headline"
         if reason is None:
             key = dedup_key(line)
             if key in self.seen:

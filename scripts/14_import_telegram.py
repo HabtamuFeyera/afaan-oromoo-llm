@@ -33,6 +33,7 @@ from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+from oromo_llm.contamination import HeadlineFilter  # noqa: E402
 from oromo_llm.text import WORD_RE, normalize  # noqa: E402
 
 RAW = ROOT / "data" / "raw" / "telegram"
@@ -68,6 +69,7 @@ def parse_export(folder):
 def clean_post(text):
     lines = []
     for raw in text.split("\n"):
+        raw = unicodedata.normalize("NFKC", raw)  # fancy letters such as 𝐒𝐇𝐀𝐑𝐄 become plain SHARE
         line = HANDLE_RE.sub(" ", HASHTAG_RE.sub(" ", strip_symbols(raw)))
         line = normalize(line)
         if line:
@@ -96,18 +98,35 @@ def eval_ngrams():
     return grams
 
 
+def channel_exports():
+    """One export per channel: when a channel was exported more than once (e.g. "BBC" and
+    "BBC_2", or an older copy in another folder), keep the export with the most posts."""
+    groups = {}
+    for folder in sorted({p.parent for p in RAW.rglob("messages*.html")}):
+        channel = re.sub(r"_\d+$", "", folder.name.removeprefix("ChatExport_")).strip()
+        posts = list(parse_export(folder))
+        best = groups.get(channel.lower())
+        if best is None or len(posts) > len(best[2]):
+            if best is not None:
+                print(f"  skipping smaller export {best[1].relative_to(RAW)} of {channel}", flush=True)
+            groups[channel.lower()] = (channel, folder, posts)
+        else:
+            print(f"  skipping smaller export {folder.relative_to(RAW)} of {channel}", flush=True)
+    return sorted(groups.values(), key=lambda g: g[0].lower())
+
+
 def main():
-    folders = sorted({p.parent for p in RAW.rglob("messages*.html")})
-    if not folders:
+    exports = channel_exports()
+    if not exports:
         sys.exit(f"no Telegram exports found under {RAW}")
     held_out = eval_ngrams()
+    headlines = HeadlineFilter()
     OUT.mkdir(parents=True, exist_ok=True)
     report = {}
     out = {"train": [], "val": []}
 
-    for folder in folders:
-        channel = folder.name.removeprefix("ChatExport_")
-        posts = [(mid, date, clean_post(text)) for mid, date, text in parse_export(folder)]
+    for channel, folder, raw_posts in exports:
+        posts = [(mid, date, clean_post(text)) for mid, date, text in raw_posts]
         posts = [p for p in posts if p[2]]
         per_line_posts = Counter(k for _, _, lines in posts for k in {line_key(l) for l in lines})
         stats = Counter(posts_with_text=len(posts))
@@ -123,6 +142,9 @@ def main():
             if ngrams(words) & held_out:
                 stats["posts_overlapping_eval_text"] += 1
                 continue
+            if any(headlines.contains_headline(l) for l in kept) or headlines.contains_headline(" ".join(kept)):
+                stats["posts_with_eval_headline"] += 1
+                continue
             uid = f"{channel}/{mid}"
             split = "val" if int(hashlib.md5(uid.encode()).hexdigest(), 16) % 100 < VAL_FRACTION * 100 else "train"
             out[split].append({"channel": channel, "id": mid, "date": date, "lines": kept})
@@ -134,7 +156,7 @@ def main():
         print(f"{channel}: {stats['posts_with_text']} posts with text -> "
               f"{stats['posts_train']} train / {stats['posts_val']} val | "
               f"{stats['words_train'] + stats['words_val']:,} words | "
-              f"{stats['posts_overlapping_eval_text']} dropped for eval overlap | "
+              f"{stats['posts_overlapping_eval_text'] + stats['posts_with_eval_headline']} dropped for eval overlap | "
               f"{stats['signature_lines_removed']} signature lines removed", flush=True)
 
     for split, rows in out.items():

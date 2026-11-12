@@ -25,7 +25,10 @@ from oromo_llm.generate import complete  # noqa: E402
 from oromo_llm.model import GPTModel  # noqa: E402
 from oromo_llm.train import calc_loss_loader, get_device  # noqa: E402
 
-SPLITS = ["val", "val_telegram"]
+# val_telegram_v1: the Telegram validation posts of the first import (4 channels), kept so
+# later runs are compared on exactly the same text; val_telegram: the current, larger set.
+SPLITS = [s for s in ["val", "val_telegram_v1", "val_telegram"]
+          if (ROOT / "data" / "processed" / f"{s}.txt").exists()]
 PROMPTS = ["Afaan Oromoo", "Mootummaan naannoo Oromiyaa", "Qonnaan bultoonni", "Barattootni kutaa 8ffaa"]
 
 
