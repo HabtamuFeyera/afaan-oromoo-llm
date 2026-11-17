@@ -1,0 +1,114 @@
+{
+  "amh_test": {
+    "clean": 22,
+    "total": 376
+  },
+  "amh_dev": {
+    "clean": 8,
+    "total": 188
+  },
+  "hau_test": {
+    "clean": 25,
+    "total": 637
+  },
+  "hau_dev": {
+    "clean": 24,
+    "total": 317
+  },
+  "ibo_test": {
+    "clean": 15,
+    "total": 390
+  },
+  "ibo_dev": {
+    "clean": 5,
+    "total": 194
+  },
+  "lin_test": {
+    "clean": 32,
+    "total": 175
+  },
+  "lin_dev": {
+    "clean": 10,
+    "total": 87
+  },
+  "lug_test": {
+    "clean": 193,
+    "total": 223
+  },
+  "lug_dev": {
+    "clean": 84,
+    "total": 110
+  },
+  "orm_test": {
+    "clean": 22,
+    "total": 325
+  },
+  "orm_dev": {
+    "clean": 12,
+    "total": 162
+  },
+  "pcm_test": {
+    "clean": 227,
+    "total": 305
+  },
+  "pcm_dev": {
+    "clean": 115,
+    "total": 152
+  },
+  "run_test": {
+    "clean": 215,
+    "total": 322
+  },
+  "run_dev": {
+    "clean": 104,
+    "total": 159
+  },
+  "sna_test": {
+    "clean": 37,
+    "total": 369
+  },
+  "sna_dev": {
+    "clean": 22,
+    "total": 185
+  },
+  "som_test": {
+    "clean": 101,
+    "total": 294
+  },
+  "som_dev": {
+    "clean": 48,
+    "total": 148
+  },
+  "swa_test": {
+    "clean": 30,
+    "total": 476
+  },
+  "swa_dev": {
+    "clean": 14,
+    "total": 237
+  },
+  "tir_test": {
+    "clean": 16,
+    "total": 272
+  },
+  "tir_dev": {
+    "clean": 12,
+    "total": 137
+  },
+  "xho_test": {
+    "clean": 158,
+    "total": 297
+  },
+  "xho_dev": {
+    "clean": 84,
+    "total": 147
+  },
+  "yor_test": {
+    "clean": 27,
+    "total": 411
+  },
+  "yor_dev": {
+    "clean": 12,
+    "total": 206
+  }
+}

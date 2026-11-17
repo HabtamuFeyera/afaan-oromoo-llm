@@ -27,3 +27,10 @@ paper/arxiv-source.tar.gz
 # The paper and its figures are published (the *.pdf rule above keeps the book out)
 !paper/main.pdf
 !paper/figures/*.pdf
+
+# Contamination audit (paper 2): keep benchmark and corpus text out of the repository
+audit/results/effect_items.jsonl
+audit/results/mechanism_afriberta.json
+audit/results/*.log
+!audit/paper/main.pdf
+!audit/paper/figures/*.pdf

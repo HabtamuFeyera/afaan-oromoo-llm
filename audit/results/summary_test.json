@@ -1,0 +1,296 @@
+{
+  "amh": {
+    "afriberta": {
+      "articles": 376,
+      "headline": 30,
+      "grams50": 7,
+      "url": 0,
+      "any": 31
+    },
+    "wura": {
+      "articles": 376,
+      "headline": 345,
+      "grams50": 342,
+      "url": 342,
+      "any": 345
+    },
+    "fineweb2": {
+      "articles": 376,
+      "headline": 125,
+      "grams50": 13,
+      "url": 29,
+      "any": 132
+    },
+    "any_corpus": 354,
+    "articles": 376
+  },
+  "hau": {
+    "afriberta": {
+      "articles": 637,
+      "headline": 164,
+      "grams50": 17,
+      "url": 0,
+      "any": 165
+    },
+    "wura": {
+      "articles": 637,
+      "headline": 588,
+      "grams50": 585,
+      "url": 588,
+      "any": 592
+    },
+    "fineweb2": {
+      "articles": 637,
+      "headline": 101,
+      "grams50": 138,
+      "url": 52,
+      "any": 165
+    },
+    "any_corpus": 612,
+    "articles": 637
+  },
+  "ibo": {
+    "afriberta": {
+      "articles": 390,
+      "headline": 173,
+      "grams50": 32,
+      "url": 0,
+      "any": 174
+    },
+    "wura": {
+      "articles": 390,
+      "headline": 355,
+      "grams50": 354,
+      "url": 355,
+      "any": 356
+    },
+    "fineweb2": {
+      "articles": 390,
+      "headline": 104,
+      "grams50": 33,
+      "url": 103,
+      "any": 117
+    },
+    "any_corpus": 375,
+    "articles": 390
+  },
+  "lin": {
+    "fineweb2": {
+      "articles": 175,
+      "headline": 13,
+      "grams50": 60,
+      "url": 140,
+      "any": 143
+    },
+    "any_corpus": 143,
+    "articles": 175
+  },
+  "lug": {
+    "fineweb2": {
+      "articles": 223,
+      "headline": 0,
+      "grams50": 30,
+      "url": 0,
+      "any": 30
+    },
+    "any_corpus": 30,
+    "articles": 223
+  },
+  "orm": {
+    "afriberta": {
+      "articles": 325,
+      "headline": 82,
+      "grams50": 1,
+      "url": 0,
+      "any": 82
+    },
+    "wura": {
+      "articles": 325,
+      "headline": 296,
+      "grams50": 296,
+      "url": 296,
+      "any": 296
+    },
+    "fineweb2": {
+      "articles": 325,
+      "headline": 33,
+      "grams50": 10,
+      "url": 26,
+      "any": 35
+    },
+    "any_corpus": 303,
+    "articles": 325
+  },
+  "pcm": {
+    "afriberta": {
+      "articles": 305,
+      "headline": 77,
+      "grams50": 27,
+      "url": 0,
+      "any": 78
+    },
+    "fineweb2": {
+      "articles": 305,
+      "headline": 0,
+      "grams50": 0,
+      "url": 0,
+      "any": 0
+    },
+    "any_corpus": 78,
+    "articles": 305
+  },
+  "run": {
+    "afriberta": {
+      "articles": 322,
+      "headline": 89,
+      "grams50": 16,
+      "url": 0,
+      "any": 89
+    },
+    "fineweb2": {
+      "articles": 322,
+      "headline": 32,
+      "grams50": 26,
+      "url": 28,
+      "any": 45
+    },
+    "any_corpus": 107,
+    "articles": 322
+  },
+  "sna": {
+    "wura": {
+      "articles": 369,
+      "headline": 274,
+      "grams50": 264,
+      "url": 277,
+      "any": 287
+    },
+    "fineweb2": {
+      "articles": 369,
+      "headline": 5,
+      "grams50": 130,
+      "url": 258,
+      "any": 259
+    },
+    "any_corpus": 332,
+    "articles": 369
+  },
+  "som": {
+    "afriberta": {
+      "articles": 294,
+      "headline": 102,
+      "grams50": 4,
+      "url": 0,
+      "any": 102
+    },
+    "wura": {
+      "articles": 294,
+      "headline": 71,
+      "grams50": 85,
+      "url": 6,
+      "any": 114
+    },
+    "fineweb2": {
+      "articles": 294,
+      "headline": 47,
+      "grams50": 132,
+      "url": 18,
+      "any": 141
+    },
+    "any_corpus": 193,
+    "articles": 294
+  },
+  "swa": {
+    "afriberta": {
+      "articles": 476,
+      "headline": 45,
+      "grams50": 2,
+      "url": 0,
+      "any": 45
+    },
+    "wura": {
+      "articles": 476,
+      "headline": 437,
+      "grams50": 435,
+      "url": 432,
+      "any": 440
+    },
+    "fineweb2": {
+      "articles": 476,
+      "headline": 54,
+      "grams50": 74,
+      "url": 41,
+      "any": 103
+    },
+    "any_corpus": 446,
+    "articles": 476
+  },
+  "tir": {
+    "afriberta": {
+      "articles": 272,
+      "headline": 29,
+      "grams50": 20,
+      "url": 0,
+      "any": 29
+    },
+    "wura": {
+      "articles": 272,
+      "headline": 253,
+      "grams50": 254,
+      "url": 254,
+      "any": 254
+    },
+    "fineweb2": {
+      "articles": 272,
+      "headline": 24,
+      "grams50": 4,
+      "url": 19,
+      "any": 24
+    },
+    "any_corpus": 256,
+    "articles": 272
+  },
+  "xho": {
+    "wura": {
+      "articles": 297,
+      "headline": 57,
+      "grams50": 16,
+      "url": 0,
+      "any": 59
+    },
+    "fineweb2": {
+      "articles": 297,
+      "headline": 6,
+      "grams50": 91,
+      "url": 0,
+      "any": 96
+    },
+    "any_corpus": 139,
+    "articles": 297
+  },
+  "yor": {
+    "afriberta": {
+      "articles": 411,
+      "headline": 100,
+      "grams50": 54,
+      "url": 0,
+      "any": 104
+    },
+    "wura": {
+      "articles": 411,
+      "headline": 373,
+      "grams50": 372,
+      "url": 373,
+      "any": 373
+    },
+    "fineweb2": {
+      "articles": 411,
+      "headline": 45,
+      "grams50": 35,
+      "url": 49,
+      "any": 54
+    },
+    "any_corpus": 384,
+    "articles": 411
+  }
+}

@@ -444,6 +444,13 @@ archive with `sh paper/build.sh` (needs `brew install tectonic`). The preprint i
 Zenodo's AfricArXiv community ([`paper/ZENODO_SUBMISSION.md`](paper/ZENODO_SUBMISSION.md));
 [`paper/ARXIV_SUBMISSION.md`](paper/ARXIV_SUBMISSION.md) has the arXiv steps for later.
 
+## Paper 2: contamination audit
+
+[`audit/`](audit) audits the MasakhaNEWS benchmark against the pretraining corpora African language
+models use (AfriBERTa, WURA, FineWeb-2): 77% of its test articles in 14 languages are in at least one
+corpus's training data, and memorization of them grows with model size. Code, release files and the
+paper draft are in that folder; see [`audit/README.md`](audit/README.md).
+
 ## Project layout
 
 ```

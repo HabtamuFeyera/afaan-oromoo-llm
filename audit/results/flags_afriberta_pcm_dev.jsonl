@@ -1,0 +1,152 @@
+{"i": 0, "headline_found": ["train"], "share_13gram": 0.2927, "share_13gram_by_file": {"eval": 0.0335, "train": 0.2591}, "url": "https://www.bbc.com/pidgin/world-52781527"}
+{"i": 1, "headline_found": ["train"], "share_13gram": 0.5227, "share_13gram_by_file": {"eval": 0.0606, "train": 0.4621}, "url": "https://www.bbc.com/pidgin/sport-53916292"}
+{"i": 2, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-54765047"}
+{"i": 3, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-55464381"}
+{"i": 4, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/cyde86018m9o"}
+{"i": 5, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/ckmyrzg2n4ko"}
+{"i": 6, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/media-59378060"}
+{"i": 7, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-55434559"}
+{"i": 8, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-59732265"}
+{"i": 9, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/media-60778322"}
+{"i": 10, "headline_found": ["eval", "train"], "share_13gram": 0.3918, "share_13gram_by_file": {"eval": 0.0, "train": 0.3918}, "url": "https://www.bbc.com/pidgin/sport-51166186"}
+{"i": 11, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-60749114"}
+{"i": 12, "headline_found": ["train"], "share_13gram": 0.5393, "share_13gram_by_file": {"eval": 0.1573, "train": 0.5393}, "url": "https://www.bbc.com/pidgin/sport-49970018"}
+{"i": 13, "headline_found": ["train"], "share_13gram": 0.5309, "share_13gram_by_file": {"eval": 0.0691, "train": 0.4618}, "url": "https://www.bbc.com/pidgin/tori-54064420"}
+{"i": 14, "headline_found": ["train"], "share_13gram": 0.4631, "share_13gram_by_file": {"eval": 0.0256, "train": 0.4375}, "url": "https://www.bbc.com/pidgin/tori-51993921"}
+{"i": 15, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-61369130"}
+{"i": 16, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-55686920"}
+{"i": 17, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-59258219"}
+{"i": 18, "headline_found": ["train"], "share_13gram": 0.5732, "share_13gram_by_file": {"eval": 0.0, "train": 0.5732}, "url": "https://www.bbc.com/pidgin/tori-52932812"}
+{"i": 19, "headline_found": ["train"], "share_13gram": 0.4708, "share_13gram_by_file": {"eval": 0.0661, "train": 0.4047}, "url": "https://www.bbc.com/pidgin/sport-49209441"}
+{"i": 20, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-56729112"}
+{"i": 21, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-59999357"}
+{"i": 22, "headline_found": ["train"], "share_13gram": 0.3763, "share_13gram_by_file": {"eval": 0.0824, "train": 0.2939}, "url": "https://www.bbc.com/pidgin/world-53791171"}
+{"i": 23, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/world-60669751"}
+{"i": 24, "headline_found": ["train"], "share_13gram": 0.4976, "share_13gram_by_file": {"eval": 0.0646, "train": 0.433}, "url": "https://www.bbc.com/pidgin/tori-52784276"}
+{"i": 25, "headline_found": ["train"], "share_13gram": 0.4744, "share_13gram_by_file": {"eval": 0.0462, "train": 0.4282}, "url": "https://www.bbc.com/pidgin/tori-51388005"}
+{"i": 26, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-56659403"}
+{"i": 27, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c9rl3y4v0v5o"}
+{"i": 28, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-58273215"}
+{"i": 29, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c72w11lg7jro"}
+{"i": 30, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-62616466"}
+{"i": 31, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-57578238"}
+{"i": 32, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-57880839"}
+{"i": 33, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-55033522"}
+{"i": 34, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c90g5xn1jgwo"}
+{"i": 35, "headline_found": ["eval", "train"], "share_13gram": 0.4359, "share_13gram_by_file": {"eval": 0.2137, "train": 0.2222}, "url": "https://www.bbc.com/pidgin/tori-53795181"}
+{"i": 36, "headline_found": ["eval", "train"], "share_13gram": 0.4943, "share_13gram_by_file": {"eval": 0.1418, "train": 0.3525}, "url": "https://www.bbc.com/pidgin/sport-48721375"}
+{"i": 37, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-61557826"}
+{"i": 38, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/cw47y3p1ez2o"}
+{"i": 39, "headline_found": [], "share_13gram": 0.0199, "share_13gram_by_file": {"eval": 0.0, "train": 0.0199}, "url": "https://www.bbc.com/pidgin/tori-57952558"}
+{"i": 40, "headline_found": ["train"], "share_13gram": 0.5, "share_13gram_by_file": {"eval": 0.0, "train": 0.5}, "url": "https://www.bbc.com/pidgin/sport-51626407"}
+{"i": 41, "headline_found": ["eval", "train"], "share_13gram": 0.5528, "share_13gram_by_file": {"eval": 0.0, "train": 0.5528}, "url": "https://www.bbc.com/pidgin/tori-52869813"}
+{"i": 42, "headline_found": ["eval", "train"], "share_13gram": 0.454, "share_13gram_by_file": {"eval": 0.1207, "train": 0.4253}, "url": "https://www.bbc.com/pidgin/tori-49238442"}
+{"i": 43, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/media-59378058"}
+{"i": 44, "headline_found": ["eval", "train"], "share_13gram": 0.4286, "share_13gram_by_file": {"eval": 0.0865, "train": 0.3421}, "url": "https://www.bbc.com/pidgin/tori-53762126"}
+{"i": 45, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/60361158"}
+{"i": 46, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-58011819"}
+{"i": 47, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-56539936"}
+{"i": 48, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-55199696"}
+{"i": 49, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-57684153"}
+{"i": 50, "headline_found": ["eval", "train"], "share_13gram": 0.6429, "share_13gram_by_file": {"eval": 0.2041, "train": 0.5102}, "url": "https://www.bbc.com/pidgin/tori-51757503"}
+{"i": 51, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/media-55822286"}
+{"i": 52, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/cn0ylp95zpeo"}
+{"i": 53, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-56011624"}
+{"i": 54, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-60158382"}
+{"i": 55, "headline_found": ["train"], "share_13gram": 0.4152, "share_13gram_by_file": {"eval": 0.0263, "train": 0.3889}, "url": "https://www.bbc.com/pidgin/sport-52817357"}
+{"i": 56, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-55004573"}
+{"i": 57, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c25dx4vk8kno"}
+{"i": 58, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/62552129"}
+{"i": 59, "headline_found": ["train"], "share_13gram": 0.4286, "share_13gram_by_file": {"eval": 0.076, "train": 0.3526}, "url": "https://www.bbc.com/pidgin/tori-53510199"}
+{"i": 60, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-55614845"}
+{"i": 61, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-54739843"}
+{"i": 62, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-56398514"}
+{"i": 63, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/world-55923019"}
+{"i": 64, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/media-56884890"}
+{"i": 65, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c516ngdzd58o"}
+{"i": 66, "headline_found": ["train"], "share_13gram": 0.4012, "share_13gram_by_file": {"eval": 0.0523, "train": 0.4012}, "url": "https://www.bbc.com/pidgin/tori-53627182"}
+{"i": 67, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-62235065"}
+{"i": 68, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-61042895"}
+{"i": 69, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c7203ky8575o"}
+{"i": 70, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/cp0qg4j41qno"}
+{"i": 71, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-56991817"}
+{"i": 72, "headline_found": [], "share_13gram": 0.0312, "share_13gram_by_file": {"eval": 0.0, "train": 0.0312}, "url": "https://www.bbc.com/pidgin/articles/cz4wx0rp1v7o"}
+{"i": 73, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c98jq2nv0yjo"}
+{"i": 74, "headline_found": ["train"], "share_13gram": 0.5946, "share_13gram_by_file": {"eval": 0.1959, "train": 0.5946}, "url": "https://www.bbc.com/pidgin/tori-53675756"}
+{"i": 75, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-58060085"}
+{"i": 76, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c4n01zd7k8do"}
+{"i": 77, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-56583657"}
+{"i": 78, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/world-59708776"}
+{"i": 79, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-56998903"}
+{"i": 80, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-58967149"}
+{"i": 81, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-59355182"}
+{"i": 82, "headline_found": ["train"], "share_13gram": 0.622, "share_13gram_by_file": {"eval": 0.2047, "train": 0.4173}, "url": "https://www.bbc.com/pidgin/tori-50570258"}
+{"i": 83, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c19m1pxvxv7o"}
+{"i": 84, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-60679277"}
+{"i": 85, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-58778484"}
+{"i": 86, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/media-61142637"}
+{"i": 87, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/world-56528761"}
+{"i": 88, "headline_found": ["eval", "train"], "share_13gram": 0.55, "share_13gram_by_file": {"eval": 0.225, "train": 0.325}, "url": "https://www.bbc.com/pidgin/tori-49809441"}
+{"i": 89, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-58932318"}
+{"i": 90, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-54426617"}
+{"i": 91, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-59688311"}
+{"i": 92, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-57090511"}
+{"i": 93, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-58821263"}
+{"i": 94, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c130y882em0o"}
+{"i": 95, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-57489980"}
+{"i": 96, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-56665328"}
+{"i": 97, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-62171365"}
+{"i": 98, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-57217081"}
+{"i": 99, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-57220974"}
+{"i": 100, "headline_found": ["train"], "share_13gram": 0.5231, "share_13gram_by_file": {"eval": 0.0, "train": 0.5231}, "url": "https://www.bbc.com/pidgin/tori-53812992"}
+{"i": 101, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-59674157"}
+{"i": 102, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-55761976"}
+{"i": 103, "headline_found": ["train"], "share_13gram": 0.5341, "share_13gram_by_file": {"eval": 0.1044, "train": 0.4297}, "url": "https://www.bbc.com/pidgin/sport-51233244"}
+{"i": 104, "headline_found": ["train"], "share_13gram": 0.5906, "share_13gram_by_file": {"eval": 0.0, "train": 0.5906}, "url": "https://www.bbc.com/pidgin/tori-49806982"}
+{"i": 105, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-54875521"}
+{"i": 106, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-56360221"}
+{"i": 107, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/world-55570816"}
+{"i": 108, "headline_found": ["train"], "share_13gram": 0.4184, "share_13gram_by_file": {"eval": 0.0638, "train": 0.4184}, "url": "https://www.bbc.com/pidgin/sport-48986756"}
+{"i": 109, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c2q5ewprv3go"}
+{"i": 110, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-57455076"}
+{"i": 111, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-54502552"}
+{"i": 112, "headline_found": ["eval", "train"], "share_13gram": 0.5689, "share_13gram_by_file": {"eval": 0.0, "train": 0.5689}, "url": "https://www.bbc.com/pidgin/tori-48905207"}
+{"i": 113, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-54777148"}
+{"i": 114, "headline_found": ["train"], "share_13gram": 0.52, "share_13gram_by_file": {"eval": 0.0, "train": 0.52}, "url": "https://www.bbc.com/pidgin/tori-48953924"}
+{"i": 115, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-58215610"}
+{"i": 116, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/world-58535032"}
+{"i": 117, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-56642765"}
+{"i": 118, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/world-61121473"}
+{"i": 119, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-57455741"}
+{"i": 120, "headline_found": ["eval", "train"], "share_13gram": 0.5321, "share_13gram_by_file": {"eval": 0.0311, "train": 0.501}, "url": "https://www.bbc.com/pidgin/tori-51947856"}
+{"i": 121, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-55128018"}
+{"i": 122, "headline_found": ["eval", "train"], "share_13gram": 0.5127, "share_13gram_by_file": {"eval": 0.1818, "train": 0.3309}, "url": "https://www.bbc.com/pidgin/tori-50393098"}
+{"i": 123, "headline_found": ["eval", "train"], "share_13gram": 0.4986, "share_13gram_by_file": {"eval": 0.0085, "train": 0.4901}, "url": "https://www.bbc.com/pidgin/tori-52327936"}
+{"i": 124, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/world-61533500"}
+{"i": 125, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-58689472"}
+{"i": 126, "headline_found": ["train"], "share_13gram": 0.4606, "share_13gram_by_file": {"eval": 0.029, "train": 0.4315}, "url": "https://www.bbc.com/pidgin/tori-51898661"}
+{"i": 127, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c1vekryl6yqo"}
+{"i": 128, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-55265374"}
+{"i": 129, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-58571559"}
+{"i": 130, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-57834362"}
+{"i": 131, "headline_found": ["eval", "train"], "share_13gram": 0.7, "share_13gram_by_file": {"eval": 0.2125, "train": 0.7}, "url": "https://www.bbc.com/pidgin/52505776"}
+{"i": 132, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-56708009"}
+{"i": 133, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-59951016"}
+{"i": 134, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-56633747"}
+{"i": 135, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/world-56961760"}
+{"i": 136, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/cyjm9jvmlrro"}
+{"i": 137, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/media-56395335"}
+{"i": 138, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/cjr9qenxkxgo"}
+{"i": 139, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/62788059"}
+{"i": 140, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-61387929"}
+{"i": 141, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/c2vpxn4vnyno"}
+{"i": 142, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-58631751"}
+{"i": 143, "headline_found": ["eval", "train"], "share_13gram": 0.552, "share_13gram_by_file": {"eval": 0.1855, "train": 0.3869}, "url": "https://www.bbc.com/pidgin/tori-51504456"}
+{"i": 144, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/articles/cpeqk5glzxgo"}
+{"i": 145, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-60925845"}
+{"i": 146, "headline_found": [], "share_13gram": 0.0205, "share_13gram_by_file": {"eval": 0.0, "train": 0.0205}, "url": "https://www.bbc.com/pidgin/tori-58696547"}
+{"i": 147, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/tori-61582035"}
+{"i": 148, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/sport-54729691"}
+{"i": 149, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/world-61540378"}
+{"i": 150, "headline_found": [], "share_13gram": 0.0, "share_13gram_by_file": {"eval": 0.0, "train": 0.0}, "url": "https://www.bbc.com/pidgin/54453006"}
+{"i": 151, "headline_found": ["train"], "share_13gram": 0.5819, "share_13gram_by_file": {"eval": 0.089, "train": 0.5445}, "url": "https://www.bbc.com/pidgin/tori-53690212"}

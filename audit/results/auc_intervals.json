@@ -1,0 +1,56 @@
+{
+  "AfriTeVa V2 base": {
+    "auc": 0.502,
+    "ci95": [
+      0.463,
+      0.542
+    ],
+    "calibrated": false,
+    "kind": "wura"
+  },
+  "AfriTeVa V2 large": {
+    "auc": 0.509,
+    "ci95": [
+      0.469,
+      0.55
+    ],
+    "calibrated": false,
+    "kind": "wura"
+  },
+  "AfriqueQwen 0.8B": {
+    "auc": 0.529,
+    "ci95": [
+      0.49,
+      0.563
+    ],
+    "calibrated": true,
+    "kind": "wura"
+  },
+  "AfriqueQwen 4B": {
+    "auc": 0.637,
+    "ci95": [
+      0.598,
+      0.672
+    ],
+    "calibrated": true,
+    "kind": "wura"
+  },
+  "Qwen3.5 0.8B base": {
+    "auc": 0.513,
+    "ci95": [
+      0.473,
+      0.552
+    ],
+    "calibrated": false,
+    "kind": "control"
+  },
+  "Qwen3.5 4B base": {
+    "auc": 0.509,
+    "ci95": [
+      0.473,
+      0.546
+    ],
+    "calibrated": false,
+    "kind": "control"
+  }
+}
